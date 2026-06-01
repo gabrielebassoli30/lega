@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alcolisti Anonimi AA — La Lega</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #13161e;
+  --surface2: #1a1e2a;
+  --border: rgba(255,255,255,0.07);
+  --accent: #e8c547;
+  --text: #f0f0f0;
+  --muted: #7a8099;
+  --silver: #a8b2c4;
+  --bronze: #c97d44;
+  --red: #e05a5a;
+  --green: #5ab88a;
+  --blue: #5a9be0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+.hero {
+  position: relative; padding: 80px 40px 60px; text-align: center;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232,197,71,0.08) 0%, transparent 70%);
+  border-bottom: 1px solid var(--border);
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px),
+              repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px);
+  pointer-events: none;
+}
+.league-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(232,197,71,0.1); border: 1px solid rgba(232,197,71,0.3);
+  border-radius: 40px; padding: 6px 16px; font-size: 11px;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 28px;
+}
+.hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 10vw, 96px); letter-spacing: 0.04em; line-height: 0.9; color: #fff; margin-bottom: 8px; }
+.hero h1 span { color: var(--accent); }
+.hero-sub { font-size: 14px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 16px; }
+.hero-stats { display: flex; justify-content: center; gap: 40px; margin-top: 40px; flex-wrap: wrap; }
+.hero-stat { text-align: center; }
+.hero-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--accent); line-height: 1; }
+.hero-stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+
+.tabs {
+  display: flex; gap: 0; padding: 0 20px; border-bottom: 1px solid var(--border);
+  overflow-x: auto; background: var(--surface); position: sticky; top: 0; z-index: 10;
+}
+.tab {
+  padding: 16px 20px; font-size: 12px; font-weight: 500; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--muted); cursor: pointer; border: none;
+  background: transparent; border-bottom: 2px solid transparent; white-space: nowrap;
+  font-family: 'DM Sans', sans-serif; transition: color .2s;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.content { max-width: 1100px; margin: 0 auto; padding: 48px 20px; }
+.section { display: none; }
+.section.active { display: block; }
+
+/* ALBO */
+.albo-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.albo-row {
+  display: grid; grid-template-columns: 80px 1fr 1fr 1fr 1fr 1fr;
+  align-items: center; gap: 12px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px;
+  transition: border-color .2s, background .2s;
+}
+.albo-row:hover { border-color: rgba(232,197,71,0.2); background: var(--surface2); }
+.albo-row.header { background: transparent; border-color: transparent; padding: 0 20px 8px; }
+.albo-row.header span { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.albo-season { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--accent); letter-spacing: 0.04em; }
+.albo-team { font-size: 14px; font-weight: 500; color: var(--text); }
+.albo-team.p1::before { content: '🥇 '; }
+.albo-team.p2::before { content: '🥈 '; }
+.albo-team.p3::before { content: '🥉 '; }
+.albo-team.coppa::before { content: '🏆 '; }
+.albo-team.ultimo { color: var(--muted); font-size: 13px; }
+.albo-team.ultimo::before { content: '💀 '; }
+.badge-current { display: inline-block; background: rgba(232,197,71,0.15); border: 1px solid rgba(232,197,71,0.4); color: var(--accent); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
+
+/* PALMARES */
+.palmares-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.palmares-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; transition: border-color .2s; }
+.palmares-card:hover { border-color: rgba(232,197,71,0.2); }
+.palmares-name { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.04em; color: #fff; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.palmares-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.ps { text-align: center; }
+.ps-val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; }
+.ps-val.gold { color: var(--accent); } .ps-val.silver { color: var(--silver); }
+.ps-val.bronze { color: var(--bronze); } .ps-val.cup { color: var(--blue); } .ps-val.last { color: var(--red); }
+.ps-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+
+/* RANKING */
+.ranking-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+.season-display { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--accent); line-height: 1; }
+.season-display small { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.slider-wrap { flex: 1; min-width: 220px; max-width: 400px; }
+.slider-wrap label { display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; background: var(--surface2); border-radius: 2px; outline: none; cursor: pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid var(--bg); box-shadow: 0 0 10px rgba(232,197,71,0.4); }
+.slider-seasons { display: flex; justify-content: space-between; margin-top: 6px; }
+.slider-seasons span { font-size: 9px; color: var(--muted); letter-spacing: 0.06em; }
+.ranking-list { display: flex; flex-direction: column; gap: 8px; }
+.rank-row { display: flex; align-items: center; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 20px; }
+.rank-row.rank-1 { border-color: rgba(232,197,71,0.4); background: rgba(232,197,71,0.05); }
+.rank-pos { font-family: 'Bebas Neue', sans-serif; font-size: 28px; min-width: 32px; text-align: center; color: var(--muted); line-height: 1; }
+.rank-row.rank-1 .rank-pos { color: var(--accent); } .rank-row.rank-2 .rank-pos { color: var(--silver); } .rank-row.rank-3 .rank-pos { color: var(--bronze); }
+.rank-name { flex: 1; font-size: 15px; font-weight: 500; }
+.rank-pts { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--accent); letter-spacing: 0.04em; }
+.rank-bar-wrap { flex: 1; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; min-width: 80px; max-width: 200px; }
+.rank-bar { height: 100%; border-radius: 2px; background: var(--accent); transition: width .5s ease; }
+.rank-row.rank-2 .rank-bar { background: var(--silver); } .rank-row.rank-3 .rank-bar { background: var(--bronze); }
+.rank-row.rank-last .rank-bar { background: var(--red); } .rank-row.rank-last .rank-pts { color: var(--red); }
+.rank-trophy { font-size: 16px; min-width: 20px; }
+
+/* SCONTRI DIRETTI */
+.sd-layout { display: grid; grid-template-columns: 220px 1fr; gap: 0; min-height: 500px; }
+.sd-teams { border-right: 1px solid var(--border); padding-right: 0; }
+.sd-team-btn {
+  display: block; width: 100%; text-align: left; padding: 12px 16px;
+  background: transparent; border: none; border-bottom: 1px solid var(--border);
+  color: var(--muted); font-size: 13px; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: background .15s, color .15s;
+}
+.sd-team-btn:hover { background: var(--surface2); color: var(--text); }
+.sd-team-btn.active { background: rgba(232,197,71,0.08); color: var(--accent); border-left: 2px solid var(--accent); }
+.sd-panel { padding: 0 0 0 24px; }
+.sd-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: #fff; margin-bottom: 20px; letter-spacing: 0.04em; }
+.sd-table-wrap { overflow-x: auto; }
+.sd-table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+.sd-table th {
+  text-align: center; padding: 8px 10px; color: var(--muted); font-weight: 500;
+  border-bottom: 1px solid var(--border); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.sd-table th:first-child { text-align: left; }
+.sd-table td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); text-align: center; color: var(--text); }
+.sd-table td:first-child { text-align: left; font-weight: 500; color: var(--text); }
+.sd-table tr:hover td { background: var(--surface2); }
+.sd-table tr.total-row td { color: var(--muted); font-style: italic; border-top: 1px solid var(--border); }
+.val-pos { color: var(--green); }
+.val-neg { color: var(--red); }
+.val-neu { color: var(--muted); }
+.pct-high { color: var(--green); }
+.pct-mid { color: var(--accent); }
+.pct-low { color: var(--red); }
+
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 0.04em; color: #fff; margin-bottom: 8px; }
+.section-desc { font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+
+@media (max-width: 600px) {
+  .albo-row { grid-template-columns: 60px 1fr; gap: 6px; }
+  .albo-row .albo-team:nth-child(n+3) { display: none; }
+  .albo-row.header span:nth-child(n+3) { display: none; }
+  .sd-layout { grid-template-columns: 1fr; }
+  .sd-teams { border-right: none; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 4px; padding-bottom: 12px; margin-bottom: 16px; }
+  .sd-team-btn { width: auto; border: 1px solid var(--border); border-radius: 4px; padding: 6px 12px; border-bottom: 1px solid var(--border); }
+  .sd-panel { padding: 0; }
+}
+
+/* ACQUISTI */
+.acq-tabs { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+.acq-role-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--muted); font-size: 13px; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: all .15s; font-weight: 500;
+}
+.acq-role-btn:hover { border-color: rgba(232,197,71,0.3); color: var(--text); }
+.acq-role-btn.active { border-color: var(--accent); background: rgba(232,197,71,0.08); color: var(--accent); }
+.acq-role-emoji { font-size: 16px; }
+.acq-table-wrap { overflow-x: auto; }
+.acq-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.acq-table th {
+  text-align: left; padding: 10px 14px; color: var(--muted); font-weight: 500;
+  border-bottom: 1px solid var(--border); font-size: 11px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.acq-table th.right { text-align: right; }
+.acq-table td { padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text); }
+.acq-table td.right { text-align: right; }
+.acq-table tr:hover td { background: var(--surface2); }
+.acq-rank { color: var(--muted); font-size: 12px; width: 32px; }
+.acq-price {
+  font-family: 'Bebas Neue', sans-serif; font-size: 18px;
+  color: var(--accent); letter-spacing: 0.04em; text-align: right;
+}
+.acq-price-bar-wrap { width: 80px; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 8px; }
+.acq-price-bar { height: 100%; border-radius: 2px; background: var(--accent); }
+.acq-year { font-size: 12px; color: var(--muted); }
+.acq-player { font-weight: 500; }
+.acq-link { color: var(--text); text-decoration: none; border-bottom: 1px dashed rgba(255,255,255,0.3); transition: color .15s; }
+.acq-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.acq-link-icon { font-size: 10px; opacity: 0.5; }
+
+
+/* FLUSSI DI CASSA */
+.flussi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 40px; }
+.flussi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; transition: border-color .2s; }
+.flussi-card:hover { border-color: rgba(232,197,71,0.2); }
+.flussi-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.flussi-team-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.04em; color: #fff; }
+.flussi-saldo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.04em; }
+.flussi-saldo.pos { color: var(--green); }
+.flussi-saldo.neg { color: var(--red); }
+.flussi-saldo.neu { color: var(--muted); }
+.flussi-rows { display: flex; flex-direction: column; gap: 4px; }
+.flussi-row { display: grid; grid-template-columns: 80px 1fr 1fr 60px; gap: 8px; align-items: center; font-size: 12px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.flussi-row:last-child { border-bottom: none; }
+.flussi-row-year { color: var(--muted); font-size: 11px; }
+.flussi-bar-wrap { position: relative; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.flussi-bar-e { position: absolute; left: 0; height: 100%; border-radius: 3px; background: var(--green); opacity: 0.8; }
+.flussi-bar-u { position: absolute; left: 0; height: 100%; border-radius: 3px; background: var(--red); opacity: 0.8; }
+.flussi-net { font-size: 12px; font-weight: 500; text-align: right; }
+.flussi-net.pos { color: var(--green); }
+.flussi-net.neg { color: var(--red); }
+.flussi-net.neu { color: var(--muted); }
+.flussi-row-header { display: grid; grid-template-columns: 80px 1fr 1fr 60px; gap: 8px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+
+.flussi-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 36px; }
+.flussi-summary-card { background: var(--surface2); border-radius: 8px; padding: 14px 16px; }
+.flussi-summary-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.flussi-summary-val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.04em; line-height: 1; }
+.flussi-summary-val.pos { color: var(--green); }
+.flussi-summary-val.neg { color: var(--red); }
+.flussi-summary-val.neu { color: var(--accent); }
+
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="league-badge">⚽ Alcolisti Anonimi AA</div>
+  <h1>La <span>Lega</span></h1>
+  <p class="hero-sub">Storia · Albo d'Oro · Ranking · Scontri Diretti</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num">11</div><div class="hero-stat-label">Stagioni</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">8</div><div class="hero-stat-label">Squadre</div></div>
+    <div class="hero-stat"><div class="hero-stat-num" id="totalChamps">—</div><div class="hero-stat-label">Campioni diversi</div></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('albo', this)">Albo d'oro</button>
+  <button class="tab" onclick="showTab('palmares', this)">Palmares</button>
+  <button class="tab" onclick="showTab('ranking', this)">Ranking storico</button>
+  <button class="tab" onclick="showTab('scontri-camp', this)">Scontri diretti campionato</button>
+  <button class="tab" onclick="showTab('scontri-coppa', this)">Scontri diretti coppa</button>
+  <button class="tab" onclick="showTab('acquisti', this)">Acquisti più costosi</button>
+  <button class="tab" onclick="showTab('flussi', this)">Flussi di cassa</button>
+</div>
+
+<div class="content">
+
+  <!-- ALBO D'ORO -->
+  <div id="albo" class="section active">
+    <div class="section-title">Albo d'Oro</div>
+    <div class="section-desc">Il podio, la Coppa e l'ultimo classificato stagione per stagione.</div>
+    <div class="albo-grid">
+      <div class="albo-row header">
+        <span>Stagione</span><span>1° posto</span><span>2° posto</span><span>3° posto</span><span>Coppa</span><span>Ultimo</span>
+      </div>
+      <div id="alboRows"></div>
+    </div>
+  </div>
+
+  <!-- PALMARES -->
+  <div id="palmares" class="section">
+    <div class="section-title">Palmares</div>
+    <div class="section-desc">Tutti i trofei e i traguardi raggiunti da ogni squadra.</div>
+    <div class="palmares-grid" id="palmaresGrid"></div>
+  </div>
+
+  <!-- RANKING -->
+  <div id="ranking" class="section">
+    <div class="ranking-header">
+      <div class="season-display"><small>Stagione</small><span id="seasonLabel">2025/2026</span></div>
+      <div class="slider-wrap">
+        <label>Scorri le stagioni</label>
+        <input type="range" id="seasonSlider" min="0" max="10" value="10" oninput="updateRanking(this.value)">
+        <div class="slider-seasons"><span>2015/16</span><span>2025/26</span></div>
+      </div>
+    </div>
+    <div class="ranking-list" id="rankingList"></div>
+  </div>
+
+  <!-- SCONTRI CAMPIONATO -->
+  <div id="scontri-camp" class="section">
+    <div class="section-title">Scontri diretti — Campionato</div>
+    <div class="section-desc">Statistiche all-time di ogni squadra contro ciascun avversario nel campionato.</div>
+    <div class="sd-layout">
+      <div class="sd-teams" id="campTeamList"></div>
+      <div class="sd-panel" id="campPanel"></div>
+    </div>
+  </div>
+
+  <!-- SCONTRI COPPA -->
+  <div id="scontri-coppa" class="section">
+    <div class="section-title">Scontri diretti — Coppa</div>
+    <div class="section-desc">Statistiche all-time di ogni squadra contro ciascun avversario in Coppa.</div>
+    <div class="sd-layout">
+      <div class="sd-teams" id="coppaTeamList"></div>
+      <div class="sd-panel" id="coppaPanel"></div>
+    </div>
+  </div>
+
+
+  <!-- ACQUISTI PIÙ COSTOSI -->
+  <div id="acquisti" class="section">
+    <div class="section-title">Acquisti più costosi</div>
+    <div class="section-desc">I trasferimenti più onerosi nella storia della lega, divisi per ruolo. I prezzi sono in crediti fantacalcio.</div>
+    <div class="acq-tabs" id="acqRoleTabs"></div>
+    <div id="acqTable"></div>
+  </div>
+
+
+  <!-- FLUSSI DI CASSA -->
+  <div id="flussi" class="section">
+    <div class="section-title">Flussi di cassa</div>
+    <div class="section-desc">Entrate (premi stagionali) e uscite (quote iscrizione) per ogni squadra. Il saldo rappresenta il bilancio complessivo dalla prima stagione.</div>
+    <div class="flussi-summary" id="flussiSummary"></div>
+    <div class="flussi-grid" id="flussiGrid"></div>
+  </div>
+
+</div>
+
+<script>
+const seasons = ["2015/2016","2016/2017","2017/2018","2018/2019","2019/2020","2020/2021","2021/2022","2022/2023","2023/2024","2024/2025","2025/2026"];
+
+const alboData = [
+  { season:"2025/2026", p1:"Pescaramanzia", p2:"Team SHISH", p3:"The PinkBlackEagles", coppa:"Team SHISH", ultimo:"Brazzers", current:true },
+  { season:"2024/2025", p1:"Atletico Whalid", p2:"Patatinaikos", p3:"Brazzers", coppa:"Brazzers", ultimo:"Team SHISH" },
+  { season:"2023/2024", p1:"Pescaramanzia", p2:"Patatinaikos", p3:"Atletico Whalid", coppa:"Atletico Whalid", ultimo:"Virtus Basaglia" },
+  { season:"2022/2023", p1:"The PinkBlackEagles", p2:"Pescaramanzia", p3:"Brazzers", coppa:"Brazzers", ultimo:"Virtus Basaglia" },
+  { season:"2021/2022", p1:"The PinkBlackEagles", p2:"Team SHISH", p3:"Pescaramanzia", coppa:"Atletico Whalid", ultimo:"Atletico Whalid" },
+  { season:"2020/2021", p1:"Brazzers", p2:"Psv Endovena", p3:"Atletico Whalid", coppa:"Pescaramanzia", ultimo:"Team SHISH" },
+  { season:"2019/2020", p1:"Psv Endovena", p2:"Brazzers", p3:"Virtus Basaglia", coppa:"/", ultimo:"Atletico Whalid" },
+  { season:"2018/2019", p1:"Psv Endovena", p2:"Atletico Whalid", p3:"Brazzers", coppa:"Pescaramanzia", ultimo:"Virtus Basaglia" },
+  { season:"2017/2018", p1:"Atletico Whalid", p2:"Psv Endovena", p3:"Patatinaikos", coppa:"Pescaramanzia", ultimo:"The PinkBlackEagles" },
+  { season:"2016/2017", p1:"Patatinaikos", p2:"Atletico Whalid", p3:"Psv Endovena", coppa:"Patatinaikos", ultimo:"Team SHISH" },
+  { season:"2015/2016", p1:"Team SHISH", p2:"Psv Endovena", p3:"Patatinaikos", coppa:"/", ultimo:"Pescaramanzia" },
+];
+
+const rankingData = {
+  "2015/2016": [{name:"Team SHISH",pts:17},{name:"Psv Endovena",pts:15},{name:"Patatinaikos",pts:13},{name:"Atletico Whalid",pts:10},{name:"Virtus Basaglia",pts:10},{name:"PeScaramanzia",pts:9},{name:"ThePinkBlackEagles",pts:0},{name:"Brazzers",pts:0}],
+  "2016/2017": [{name:"Patatinaikos",pts:30.94},{name:"Psv Endovena",pts:19.5},{name:"Team SHISH",pts:15.3},{name:"Atletico Whalid",pts:15},{name:"Virtus Basaglia",pts:10},{name:"ThePinkBlackEagles",pts:10},{name:"Brazzers",pts:10},{name:"PeScaramanzia",pts:9}],
+  "2017/2018": [{name:"Patatinaikos",pts:40.22},{name:"Psv Endovena",pts:29.25},{name:"Atletico Whalid",pts:25.5},{name:"Team SHISH",pts:15.3},{name:"PeScaramanzia",pts:12.6},{name:"Virtus Basaglia",pts:10},{name:"ThePinkBlackEagles",pts:9},{name:"Brazzers",pts:10}],
+  "2018/2019": [{name:"Psv Endovena",pts:49.73},{name:"Patatinaikos",pts:40.22},{name:"Atletico Whalid",pts:38.25},{name:"PeScaramanzia",pts:17.64},{name:"Team SHISH",pts:15.3},{name:"Brazzers",pts:13},{name:"Virtus Basaglia",pts:9},{name:"ThePinkBlackEagles",pts:9}],
+  "2019/2020": [{name:"Psv Endovena",pts:84.53},{name:"Patatinaikos",pts:40.22},{name:"Atletico Whalid",pts:34.43},{name:"Brazzers",pts:19.5},{name:"PeScaramanzia",pts:17.64},{name:"Team SHISH",pts:15.3},{name:"Virtus Basaglia",pts:11.7},{name:"ThePinkBlackEagles",pts:9}],
+  "2020/2021": [{name:"Psv Endovena",pts:126.80},{name:"Atletico Whalid",pts:44.75},{name:"Patatinaikos",pts:40.22},{name:"Brazzers",pts:33.15},{name:"PeScaramanzia",pts:24.70},{name:"ThePinkBlackEagles",pts:15.30},{name:"Team SHISH",pts:13.77},{name:"Virtus Basaglia",pts:11.70}],
+  "2021/2022": [{name:"Psv Endovena",pts:126.80},{name:"Atletico Whalid",pts:56.39},{name:"Brazzers",pts:33.15},{name:"Patatinaikos",pts:40.22},{name:"PeScaramanzia",pts:32.10},{name:"Team SHISH",pts:20.66},{name:"ThePinkBlackEagles",pts:15.30},{name:"Virtus Basaglia",pts:10.53}],
+  "2022/2023": [{name:"Psv Endovena",pts:126.80},{name:"Brazzers",pts:60.33},{name:"Atletico Whalid",pts:56.39},{name:"PeScaramanzia",pts:48.16},{name:"Patatinaikos",pts:40.22},{name:"ThePinkBlackEagles",pts:26.01},{name:"Team SHISH",pts:20.66},{name:"Virtus Basaglia",pts:9.48}],
+  "2023/2024": [{name:"Psv Endovena",pts:126.80},{name:"Brazzers",pts:109.80},{name:"Atletico Whalid",pts:102.63},{name:"PeScaramanzia",pts:81.87},{name:"Patatinaikos",pts:60.33},{name:"ThePinkBlackEagles",pts:26.01},{name:"Team SHISH",pts:18.59},{name:"Virtus Basaglia",pts:9.48}],
+  "2024/2025": [{name:"Atletico Whalid",pts:174.46},{name:"Psv Endovena",pts:126.80},{name:"Brazzers",pts:109.80},{name:"Patatinaikos",pts:90.50},{name:"PeScaramanzia",pts:81.87},{name:"ThePinkBlackEagles",pts:26.01},{name:"Team SHISH",pts:18.59},{name:"Virtus Basaglia",pts:9.48}],
+  "2025/2026": [{name:"Atletico Whalid",pts:174.46},{name:"PeScaramanzia",pts:139.18},{name:"Psv Endovena",pts:126.80},{name:"Brazzers",pts:98.82},{name:"Patatinaikos",pts:90.50},{name:"Team SHISH",pts:39.04},{name:"ThePinkBlackEagles",pts:33.81},{name:"Virtus Basaglia",pts:9.48}],
+};
+
+const palmaresData = [
+  {name:"Atletico Whalid", p1:2, p2:2, p3:2, coppa:2, ultimo:2},
+  {name:"Brazzers", p1:1, p2:1, p3:3, coppa:2, ultimo:1},
+  {name:"Patatinaikos", p1:1, p2:2, p3:2, coppa:1, ultimo:0},
+  {name:"Pescaramanzia", p1:2, p2:1, p3:1, coppa:3, ultimo:1},
+  {name:"Psv Endovena", p1:2, p2:3, p3:1, coppa:0, ultimo:0},
+  {name:"Team SHISH", p1:1, p2:2, p3:0, coppa:1, ultimo:3},
+  {name:"The PinkBlackEagles", p1:2, p2:0, p3:1, coppa:0, ultimo:1},
+  {name:"Virtus Basaglia", p1:0, p2:0, p3:1, coppa:0, ultimo:3},
+];
+
+const CAMP_DATA = [{"team": "Psv Endovena", "rows": [{"opp": "ThePinkBlackEagles", "G": 29, "V": 15, "pV": 51.7, "N": 6, "pN": 20.7, "P": 8, "pP": 27.6, "GF": 60, "MGF": 2.07, "GS": 49, "MGS": 1.69, "DR": 11, "PF": 2075, "PS": 2036, "FD": 0, "FDC": 0, "MPP": 71.55, "MPPS": 70.21}, {"opp": "Virtus Basaglia", "G": 30, "V": 11, "pV": 36.7, "N": 6, "pN": 20.0, "P": 13, "pP": 43.3, "GF": 61, "MGF": 2.03, "GS": 62, "MGS": 2.07, "DR": -1, "PF": 2141.5, "PS": 2023.5, "FD": 0, "FDC": 2, "MPP": 71.38, "MPPS": 72.27}, {"opp": "PeScaramanzia", "G": 29, "V": 11, "pV": 37.9, "N": 9, "pN": 31.0, "P": 9, "pP": 31.0, "GF": 56, "MGF": 1.93, "GS": 56, "MGS": 1.93, "DR": 0, "PF": 2078.5, "PS": 2056.5, "FD": 0, "FDC": 0, "MPP": 71.67, "MPPS": 70.91}, {"opp": "Atletico Whalid", "G": 28, "V": 13, "pV": 46.4, "N": 4, "pN": 14.3, "P": 11, "pP": 39.3, "GF": 65, "MGF": 2.32, "GS": 56, "MGS": 2.0, "DR": 9, "PF": 2036, "PS": 1928, "FD": 0, "FDC": 1, "MPP": 72.71, "MPPS": 71.41}, {"opp": "Patatinaikos", "G": 28, "V": 10, "pV": 35.7, "N": 6, "pN": 21.4, "P": 12, "pP": 42.9, "GF": 57, "MGF": 2.04, "GS": 62, "MGS": 2.21, "DR": -5, "PF": 2004.5, "PS": 2028.5, "FD": 0, "FDC": 0, "MPP": 71.59, "MPPS": 72.45}, {"opp": "Team SHISH", "G": 30, "V": 13, "pV": 43.3, "N": 3, "pN": 10.0, "P": 14, "pP": 46.7, "GF": 56, "MGF": 1.87, "GS": 51, "MGS": 1.7, "DR": 5, "PF": 2098.5, "PS": 2038, "FD": 0, "FDC": 1, "MPP": 69.95, "MPPS": 70.28}, {"opp": "brazzers", "G": 29, "V": 12, "pV": 41.4, "N": 7, "pN": 24.1, "P": 10, "pP": 34.5, "GF": 57, "MGF": 1.97, "GS": 56, "MGS": 1.93, "DR": 1, "PF": 2070.5, "PS": 1987.5, "FD": 0, "FDC": 1, "MPP": 71.4, "MPPS": 70.98}]}, {"team": "ThePinkBlackEagles", "rows": [{"opp": "Psv Endovena", "G": 29, "V": 8, "pV": 27.6, "N": 6, "pN": 20.7, "P": 15, "pP": 51.7, "GF": 49, "MGF": 1.69, "GS": 60, "MGS": 2.07, "DR": -11, "PF": 2036, "PS": 2075, "FD": 0, "FDC": 0, "MPP": 70.21, "MPPS": 71.55}, {"opp": "Virtus Basaglia", "G": 28, "V": 17, "pV": 60.7, "N": 6, "pN": 21.4, "P": 5, "pP": 17.9, "GF": 80, "MGF": 2.86, "GS": 46, "MGS": 1.64, "DR": 34, "PF": 2098.5, "PS": 1951, "FD": 0, "FDC": 0, "MPP": 74.95, "MPPS": 69.68}, {"opp": "PeScaramanzia", "G": 29, "V": 6, "pV": 20.7, "N": 10, "pN": 34.5, "P": 13, "pP": 44.8, "GF": 40, "MGF": 1.38, "GS": 54, "MGS": 1.86, "DR": -14, "PF": 1953, "PS": 2059.5, "FD": 1, "FDC": 0, "MPP": 69.75, "MPPS": 71.02}, {"opp": "Atletico Whalid", "G": 29, "V": 12, "pV": 41.4, "N": 6, "pN": 20.7, "P": 11, "pP": 37.9, "GF": 63, "MGF": 2.17, "GS": 61, "MGS": 2.1, "DR": 2, "PF": 2102.5, "PS": 2078.5, "FD": 0, "FDC": 0, "MPP": 72.5, "MPPS": 71.67}, {"opp": "Patatinaikos", "G": 28, "V": 11, "pV": 39.3, "N": 5, "pN": 17.9, "P": 12, "pP": 42.9, "GF": 63, "MGF": 2.25, "GS": 68, "MGS": 2.43, "DR": -5, "PF": 2025, "PS": 2041.5, "FD": 0, "FDC": 0, "MPP": 72.32, "MPPS": 72.91}, {"opp": "Team SHISH", "G": 29, "V": 13, "pV": 44.8, "N": 5, "pN": 17.2, "P": 11, "pP": 37.9, "GF": 61, "MGF": 2.1, "GS": 54, "MGS": 1.86, "DR": 7, "PF": 2097.5, "PS": 2058, "FD": 0, "FDC": 0, "MPP": 72.33, "MPPS": 70.97}, {"opp": "brazzers", "G": 31, "V": 8, "pV": 25.8, "N": 9, "pN": 29.0, "P": 14, "pP": 45.2, "GF": 48, "MGF": 1.55, "GS": 66, "MGS": 2.13, "DR": -18, "PF": 2171, "PS": 2227.5, "FD": 0, "FDC": 0, "MPP": 70.03, "MPPS": 71.85}]}, {"team": "Virtus Basaglia", "rows": [{"opp": "ThePinkBlackEagles", "G": 28, "V": 5, "pV": 17.9, "N": 6, "pN": 21.4, "P": 17, "pP": 60.7, "GF": 46, "MGF": 1.64, "GS": 80, "MGS": 2.86, "DR": -34, "PF": 1951, "PS": 2098.5, "FD": 0, "FDC": 0, "MPP": 69.68, "MPPS": 74.95}, {"opp": "Psv Endovena", "G": 30, "V": 13, "pV": 43.3, "N": 6, "pN": 20.0, "P": 11, "pP": 36.7, "GF": 62, "MGF": 2.07, "GS": 61, "MGS": 2.03, "DR": 1, "PF": 2023.5, "PS": 2141.5, "FD": 2, "FDC": 0, "MPP": 72.27, "MPPS": 71.38}, {"opp": "PeScaramanzia", "G": 28, "V": 8, "pV": 28.6, "N": 5, "pN": 17.9, "P": 15, "pP": 53.6, "GF": 50, "MGF": 1.79, "GS": 65, "MGS": 2.32, "DR": -15, "PF": 1913, "PS": 1971, "FD": 1, "FDC": 1, "MPP": 70.85, "MPPS": 73.0}, {"opp": "Atletico Whalid", "G": 30, "V": 10, "pV": 33.3, "N": 3, "pN": 10.0, "P": 17, "pP": 56.7, "GF": 48, "MGF": 1.6, "GS": 56, "MGS": 1.87, "DR": -8, "PF": 2005, "PS": 2146, "FD": 1, "FDC": 0, "MPP": 69.14, "MPPS": 71.53}, {"opp": "Patatinaikos", "G": 30, "V": 10, "pV": 33.3, "N": 7, "pN": 23.3, "P": 13, "pP": 43.3, "GF": 54, "MGF": 1.8, "GS": 53, "MGS": 1.77, "DR": 1, "PF": 1988.5, "PS": 2127.5, "FD": 2, "FDC": 0, "MPP": 71.02, "MPPS": 70.92}, {"opp": "Team SHISH", "G": 28, "V": 14, "pV": 50.0, "N": 5, "pN": 17.9, "P": 9, "pP": 32.1, "GF": 40, "MGF": 1.43, "GS": 37, "MGS": 1.32, "DR": 3, "PF": 1868, "PS": 1918.5, "FD": 1, "FDC": 0, "MPP": 69.19, "MPPS": 68.52}, {"opp": "brazzers", "G": 29, "V": 11, "pV": 37.9, "N": 9, "pN": 31.0, "P": 9, "pP": 31.0, "GF": 43, "MGF": 1.48, "GS": 50, "MGS": 1.72, "DR": -7, "PF": 1947, "PS": 1959, "FD": 1, "FDC": 1, "MPP": 69.54, "MPPS": 69.96}]}, {"team": "PeScaramanzia", "rows": [{"opp": "ThePinkBlackEagles", "G": 29, "V": 13, "pV": 44.8, "N": 10, "pN": 34.5, "P": 6, "pP": 20.7, "GF": 54, "MGF": 1.86, "GS": 40, "MGS": 1.38, "DR": 14, "PF": 2059.5, "PS": 1953, "FD": 0, "FDC": 1, "MPP": 71.02, "MPPS": 69.75}, {"opp": "Virtus Basaglia", "G": 28, "V": 15, "pV": 53.6, "N": 5, "pN": 17.9, "P": 8, "pP": 28.6, "GF": 65, "MGF": 2.32, "GS": 50, "MGS": 1.79, "DR": 15, "PF": 1971, "PS": 1913, "FD": 1, "FDC": 1, "MPP": 73.0, "MPPS": 70.85}, {"opp": "Psv Endovena", "G": 29, "V": 9, "pV": 31.0, "N": 9, "pN": 31.0, "P": 11, "pP": 37.9, "GF": 56, "MGF": 1.93, "GS": 56, "MGS": 1.93, "DR": 0, "PF": 2056.5, "PS": 2078.5, "FD": 0, "FDC": 0, "MPP": 70.91, "MPPS": 71.67}, {"opp": "Atletico Whalid", "G": 28, "V": 17, "pV": 60.7, "N": 2, "pN": 7.1, "P": 9, "pP": 32.1, "GF": 72, "MGF": 2.57, "GS": 58, "MGS": 2.07, "DR": 14, "PF": 2062, "PS": 2012.5, "FD": 0, "FDC": 0, "MPP": 73.64, "MPPS": 71.88}, {"opp": "Patatinaikos", "G": 31, "V": 11, "pV": 35.5, "N": 4, "pN": 12.9, "P": 16, "pP": 51.6, "GF": 57, "MGF": 1.84, "GS": 80, "MGS": 2.58, "DR": -23, "PF": 2173, "PS": 2299, "FD": 0, "FDC": 0, "MPP": 70.1, "MPPS": 74.16}, {"opp": "Team SHISH", "G": 29, "V": 12, "pV": 41.4, "N": 7, "pN": 24.1, "P": 10, "pP": 34.5, "GF": 56, "MGF": 1.93, "GS": 48, "MGS": 1.66, "DR": 8, "PF": 2073.5, "PS": 2012.5, "FD": 0, "FDC": 0, "MPP": 71.5, "MPPS": 69.4}, {"opp": "brazzers", "G": 29, "V": 16, "pV": 55.2, "N": 3, "pN": 10.3, "P": 10, "pP": 34.5, "GF": 71, "MGF": 2.45, "GS": 54, "MGS": 1.86, "DR": 17, "PF": 2124, "PS": 2064.5, "FD": 0, "FDC": 0, "MPP": 73.24, "MPPS": 71.19}]}, {"team": "Atletico Whalid", "rows": [{"opp": "ThePinkBlackEagles", "G": 29, "V": 11, "pV": 37.9, "N": 6, "pN": 20.7, "P": 12, "pP": 41.4, "GF": 61, "MGF": 2.1, "GS": 63, "MGS": 2.17, "DR": -2, "PF": 2078.5, "PS": 2102.5, "FD": 0, "FDC": 0, "MPP": 71.67, "MPPS": 72.5}, {"opp": "Virtus Basaglia", "G": 30, "V": 17, "pV": 56.7, "N": 3, "pN": 10.0, "P": 10, "pP": 33.3, "GF": 56, "MGF": 1.87, "GS": 48, "MGS": 1.6, "DR": 8, "PF": 2146, "PS": 2005, "FD": 0, "FDC": 1, "MPP": 71.53, "MPPS": 69.14}, {"opp": "PeScaramanzia", "G": 28, "V": 9, "pV": 32.1, "N": 2, "pN": 7.1, "P": 17, "pP": 60.7, "GF": 58, "MGF": 2.07, "GS": 72, "MGS": 2.57, "DR": -14, "PF": 2012.5, "PS": 2062, "FD": 0, "FDC": 0, "MPP": 71.88, "MPPS": 73.64}, {"opp": "Psv Endovena", "G": 28, "V": 11, "pV": 39.3, "N": 4, "pN": 14.3, "P": 13, "pP": 46.4, "GF": 56, "MGF": 2.0, "GS": 65, "MGS": 2.32, "DR": -9, "PF": 1928, "PS": 2036, "FD": 1, "FDC": 0, "MPP": 71.41, "MPPS": 72.71}, {"opp": "Patatinaikos", "G": 30, "V": 13, "pV": 43.3, "N": 5, "pN": 16.7, "P": 12, "pP": 40.0, "GF": 53, "MGF": 1.77, "GS": 58, "MGS": 1.93, "DR": -5, "PF": 2062, "PS": 2131, "FD": 1, "FDC": 0, "MPP": 71.1, "MPPS": 71.03}, {"opp": "Team SHISH", "G": 30, "V": 15, "pV": 50.0, "N": 4, "pN": 13.3, "P": 11, "pP": 36.7, "GF": 58, "MGF": 1.93, "GS": 44, "MGS": 1.47, "DR": 14, "PF": 2138, "PS": 2084.5, "FD": 0, "FDC": 0, "MPP": 71.27, "MPPS": 69.48}, {"opp": "brazzers", "G": 28, "V": 7, "pV": 25.0, "N": 7, "pN": 25.0, "P": 14, "pP": 50.0, "GF": 51, "MGF": 1.82, "GS": 65, "MGS": 2.32, "DR": -14, "PF": 1984, "PS": 2043, "FD": 0, "FDC": 0, "MPP": 70.86, "MPPS": 72.96}]}, {"team": "Patatinaikos", "rows": [{"opp": "ThePinkBlackEagles", "G": 28, "V": 12, "pV": 42.9, "N": 5, "pN": 17.9, "P": 11, "pP": 39.3, "GF": 68, "MGF": 2.43, "GS": 63, "MGS": 2.25, "DR": 5, "PF": 2041.5, "PS": 2025, "FD": 0, "FDC": 0, "MPP": 72.91, "MPPS": 72.32}, {"opp": "Virtus Basaglia", "G": 30, "V": 13, "pV": 43.3, "N": 7, "pN": 23.3, "P": 10, "pP": 33.3, "GF": 53, "MGF": 1.77, "GS": 54, "MGS": 1.8, "DR": -1, "PF": 2127.5, "PS": 1988.5, "FD": 0, "FDC": 2, "MPP": 70.92, "MPPS": 71.02}, {"opp": "PeScaramanzia", "G": 31, "V": 16, "pV": 51.6, "N": 4, "pN": 12.9, "P": 11, "pP": 35.5, "GF": 80, "MGF": 2.58, "GS": 57, "MGS": 1.84, "DR": 23, "PF": 2299, "PS": 2173, "FD": 0, "FDC": 0, "MPP": 74.16, "MPPS": 70.1}, {"opp": "Atletico Whalid", "G": 30, "V": 12, "pV": 40.0, "N": 5, "pN": 16.7, "P": 13, "pP": 43.3, "GF": 58, "MGF": 1.93, "GS": 53, "MGS": 1.77, "DR": 5, "PF": 2131, "PS": 2062, "FD": 0, "FDC": 1, "MPP": 71.03, "MPPS": 71.1}, {"opp": "Psv Endovena", "G": 28, "V": 12, "pV": 42.9, "N": 6, "pN": 21.4, "P": 10, "pP": 35.7, "GF": 62, "MGF": 2.21, "GS": 57, "MGS": 2.04, "DR": 5, "PF": 2028.5, "PS": 2004.5, "FD": 0, "FDC": 0, "MPP": 72.45, "MPPS": 71.59}, {"opp": "Team SHISH", "G": 28, "V": 11, "pV": 39.3, "N": 6, "pN": 21.4, "P": 11, "pP": 39.3, "GF": 55, "MGF": 1.96, "GS": 56, "MGS": 2.0, "DR": -1, "PF": 2005.5, "PS": 1986, "FD": 0, "FDC": 0, "MPP": 71.62, "MPPS": 70.93}, {"opp": "brazzers", "G": 28, "V": 11, "pV": 39.3, "N": 5, "pN": 17.9, "P": 12, "pP": 42.9, "GF": 52, "MGF": 1.86, "GS": 57, "MGS": 2.04, "DR": -5, "PF": 1989, "PS": 1934.5, "FD": 0, "FDC": 1, "MPP": 71.04, "MPPS": 71.65}]}, {"team": "Team SHISH", "rows": [{"opp": "ThePinkBlackEagles", "G": 29, "V": 11, "pV": 37.9, "N": 5, "pN": 17.2, "P": 13, "pP": 44.8, "GF": 54, "MGF": 1.86, "GS": 61, "MGS": 2.1, "DR": -7, "PF": 2058, "PS": 2097.5, "FD": 0, "FDC": 0, "MPP": 70.97, "MPPS": 72.33}, {"opp": "Virtus Basaglia", "G": 28, "V": 9, "pV": 32.1, "N": 5, "pN": 17.9, "P": 14, "pP": 50.0, "GF": 37, "MGF": 1.32, "GS": 40, "MGS": 1.43, "DR": -3, "PF": 1918.5, "PS": 1868, "FD": 0, "FDC": 1, "MPP": 68.52, "MPPS": 69.19}, {"opp": "PeScaramanzia", "G": 29, "V": 10, "pV": 34.5, "N": 7, "pN": 24.1, "P": 12, "pP": 41.4, "GF": 48, "MGF": 1.66, "GS": 56, "MGS": 1.93, "DR": -8, "PF": 2012.5, "PS": 2073.5, "FD": 0, "FDC": 0, "MPP": 69.4, "MPPS": 71.5}, {"opp": "Atletico Whalid", "G": 30, "V": 11, "pV": 36.7, "N": 4, "pN": 13.3, "P": 15, "pP": 50.0, "GF": 44, "MGF": 1.47, "GS": 58, "MGS": 1.93, "DR": -14, "PF": 2084.5, "PS": 2138, "FD": 0, "FDC": 0, "MPP": 69.48, "MPPS": 71.27}, {"opp": "Patatinaikos", "G": 28, "V": 11, "pV": 39.3, "N": 6, "pN": 21.4, "P": 11, "pP": 39.3, "GF": 56, "MGF": 2.0, "GS": 55, "MGS": 1.96, "DR": 1, "PF": 1986, "PS": 2005.5, "FD": 0, "FDC": 0, "MPP": 70.93, "MPPS": 71.62}, {"opp": "Psv Endovena", "G": 30, "V": 14, "pV": 46.7, "N": 3, "pN": 10.0, "P": 13, "pP": 43.3, "GF": 51, "MGF": 1.7, "GS": 56, "MGS": 1.87, "DR": -5, "PF": 2038, "PS": 2098.5, "FD": 1, "FDC": 0, "MPP": 70.28, "MPPS": 69.95}, {"opp": "brazzers", "G": 29, "V": 9, "pV": 31.0, "N": 5, "pN": 17.2, "P": 15, "pP": 51.7, "GF": 46, "MGF": 1.59, "GS": 64, "MGS": 2.21, "DR": -18, "PF": 1842.5, "PS": 2038, "FD": 3, "FDC": 1, "MPP": 70.87, "MPPS": 72.79}]}, {"team": "brazzers", "rows": [{"opp": "ThePinkBlackEagles", "G": 31, "V": 14, "pV": 45.2, "N": 9, "pN": 29.0, "P": 8, "pP": 25.8, "GF": 66, "MGF": 2.13, "GS": 48, "MGS": 1.55, "DR": 18, "PF": 2227.5, "PS": 2171, "FD": 0, "FDC": 0, "MPP": 71.85, "MPPS": 70.03}, {"opp": "Virtus Basaglia", "G": 29, "V": 9, "pV": 31.0, "N": 9, "pN": 31.0, "P": 11, "pP": 37.9, "GF": 50, "MGF": 1.72, "GS": 43, "MGS": 1.48, "DR": 7, "PF": 1959, "PS": 1947, "FD": 1, "FDC": 1, "MPP": 69.96, "MPPS": 69.54}, {"opp": "PeScaramanzia", "G": 29, "V": 10, "pV": 34.5, "N": 3, "pN": 10.3, "P": 16, "pP": 55.2, "GF": 54, "MGF": 1.86, "GS": 71, "MGS": 2.45, "DR": -17, "PF": 2064.5, "PS": 2124, "FD": 0, "FDC": 0, "MPP": 71.19, "MPPS": 73.24}, {"opp": "Atletico Whalid", "G": 28, "V": 14, "pV": 50.0, "N": 7, "pN": 25.0, "P": 7, "pP": 25.0, "GF": 65, "MGF": 2.32, "GS": 51, "MGS": 1.82, "DR": 14, "PF": 2043, "PS": 1984, "FD": 0, "FDC": 0, "MPP": 72.96, "MPPS": 70.86}, {"opp": "Patatinaikos", "G": 28, "V": 12, "pV": 42.9, "N": 5, "pN": 17.9, "P": 11, "pP": 39.3, "GF": 57, "MGF": 2.04, "GS": 52, "MGS": 1.86, "DR": 5, "PF": 1934.5, "PS": 1989, "FD": 1, "FDC": 0, "MPP": 71.65, "MPPS": 71.04}, {"opp": "Team SHISH", "G": 29, "V": 15, "pV": 51.7, "N": 5, "pN": 17.2, "P": 9, "pP": 31.0, "GF": 64, "MGF": 2.21, "GS": 46, "MGS": 1.59, "DR": 18, "PF": 2038, "PS": 1842.5, "FD": 1, "FDC": 3, "MPP": 72.79, "MPPS": 70.87}, {"opp": "Psv Endovena", "G": 29, "V": 10, "pV": 34.5, "N": 7, "pN": 24.1, "P": 12, "pP": 41.4, "GF": 56, "MGF": 1.93, "GS": 57, "MGS": 1.97, "DR": -1, "PF": 1987.5, "PS": 2070.5, "FD": 1, "FDC": 0, "MPP": 70.98, "MPPS": 71.4}]}];
+const COPPA_DATA = [{"team": "Psv Endovena", "rows": [{"opp": "ThePinkBlackEagles", "G": 5, "V": 3, "pV": 60.0, "N": 2, "pN": 40.0, "P": 0, "pP": 0.0, "GF": 18, "MGF": 3.6, "GS": 9, "MGS": 1.8, "DR": 9, "PF": 388, "PS": 352, "FD": 0, "FDC": 0, "MPP": 77.6, "MPPS": 70.4}, {"opp": "Virtus Basaglia", "G": 8, "V": 6, "pV": 75.0, "N": 0, "pN": 0.0, "P": 2, "pP": 25.0, "GF": 19, "MGF": 2.38, "GS": 14, "MGS": 1.75, "DR": 5, "PF": 583.5, "PS": 503, "FD": 0, "FDC": 1, "MPP": 72.94, "MPPS": 71.86}, {"opp": "PeScaramanzia", "G": 6, "V": 3, "pV": 50.0, "N": 1, "pN": 16.7, "P": 2, "pP": 33.3, "GF": 19, "MGF": 3.17, "GS": 18, "MGS": 3.0, "DR": 1, "PF": 457, "PS": 456, "FD": 0, "FDC": 0, "MPP": 76.17, "MPPS": 76.0}, {"opp": "Atletico Whalid", "G": 8, "V": 1, "pV": 12.5, "N": 3, "pN": 37.5, "P": 4, "pP": 50.0, "GF": 13, "MGF": 1.62, "GS": 18, "MGS": 2.25, "DR": -5, "PF": 564, "PS": 573, "FD": 0, "FDC": 0, "MPP": 70.5, "MPPS": 71.62}, {"opp": "Patatinaikos", "G": 8, "V": 2, "pV": 25.0, "N": 4, "pN": 50.0, "P": 2, "pP": 25.0, "GF": 15, "MGF": 1.88, "GS": 16, "MGS": 2.0, "DR": -1, "PF": 569, "PS": 575.5, "FD": 0, "FDC": 0, "MPP": 71.12, "MPPS": 71.94}, {"opp": "Team SHISH", "G": 2, "V": 1, "pV": 50.0, "N": 1, "pN": 50.0, "P": 0, "pP": 0.0, "GF": 4, "MGF": 2.0, "GS": 3, "MGS": 1.5, "DR": 1, "PF": 142, "PS": 135.5, "FD": 0, "FDC": 0, "MPP": 71.0, "MPPS": 67.75}, {"opp": "brazzers", "G": 0, "V": 0, "pV": 0.0, "N": 0, "pN": 0.0, "P": 0, "pP": 0.0, "GF": 0, "MGF": 0.0, "GS": 0, "MGS": 0.0, "DR": 0, "PF": 0, "PS": 0, "FD": 0, "FDC": 0, "MPP": 0.0, "MPPS": 0.0}]}, {"team": "ThePinkBlackEagles", "rows": [{"opp": "Psv Endovena", "G": 5, "V": 0, "pV": 0.0, "N": 2, "pN": 40.0, "P": 3, "pP": 60.0, "GF": 9, "MGF": 1.8, "GS": 18, "MGS": 3.6, "DR": -9, "PF": 352, "PS": 388, "FD": 0, "FDC": 0, "MPP": 70.4, "MPPS": 77.6}, {"opp": "Virtus Basaglia", "G": 6, "V": 3, "pV": 50.0, "N": 1, "pN": 16.7, "P": 2, "pP": 33.3, "GF": 14, "MGF": 2.33, "GS": 10, "MGS": 1.67, "DR": 4, "PF": 438.5, "PS": 348, "FD": 0, "FDC": 1, "MPP": 73.08, "MPPS": 69.6}, {"opp": "PeScaramanzia", "G": 0, "V": 0, "pV": 0.0, "N": 0, "pN": 0.0, "P": 0, "pP": 0.0, "GF": 0, "MGF": 0.0, "GS": 0, "MGS": 0.0, "DR": 0, "PF": 0, "PS": 0, "FD": 0, "FDC": 0, "MPP": 0.0, "MPPS": 0.0}, {"opp": "Atletico Whalid", "G": 11, "V": 4, "pV": 36.4, "N": 3, "pN": 27.3, "P": 4, "pP": 36.4, "GF": 20, "MGF": 1.82, "GS": 22, "MGS": 2.0, "DR": -2, "PF": 785.5, "PS": 785.5, "FD": 0, "FDC": 0, "MPP": 71.41, "MPPS": 71.41}, {"opp": "Patatinaikos", "G": 4, "V": 1, "pV": 25.0, "N": 2, "pN": 50.0, "P": 1, "pP": 25.0, "GF": 9, "MGF": 2.25, "GS": 9, "MGS": 2.25, "DR": 0, "PF": 295, "PS": 289, "FD": 0, "FDC": 0, "MPP": 73.75, "MPPS": 72.25}, {"opp": "Team SHISH", "G": 6, "V": 3, "pV": 50.0, "N": 2, "pN": 33.3, "P": 1, "pP": 16.7, "GF": 14, "MGF": 2.33, "GS": 8, "MGS": 1.33, "DR": 6, "PF": 433.5, "PS": 416.5, "FD": 0, "FDC": 0, "MPP": 72.25, "MPPS": 69.42}, {"opp": "brazzers", "G": 4, "V": 2, "pV": 50.0, "N": 0, "pN": 0.0, "P": 2, "pP": 50.0, "GF": 8, "MGF": 2.0, "GS": 10, "MGS": 2.5, "DR": -2, "PF": 288.5, "PS": 292.5, "FD": 0, "FDC": 0, "MPP": 72.12, "MPPS": 73.12}]}, {"team": "Virtus Basaglia", "rows": [{"opp": "ThePinkBlackEagles", "G": 6, "V": 2, "pV": 33.3, "N": 1, "pN": 16.7, "P": 3, "pP": 50.0, "GF": 10, "MGF": 1.67, "GS": 14, "MGS": 2.33, "DR": -4, "PF": 348, "PS": 438.5, "FD": 1, "FDC": 0, "MPP": 69.6, "MPPS": 73.08}, {"opp": "Psv Endovena", "G": 8, "V": 2, "pV": 25.0, "N": 0, "pN": 0.0, "P": 6, "pP": 75.0, "GF": 14, "MGF": 1.75, "GS": 19, "MGS": 2.38, "DR": -5, "PF": 503, "PS": 583.5, "FD": 1, "FDC": 0, "MPP": 71.86, "MPPS": 72.94}, {"opp": "PeScaramanzia", "G": 6, "V": 2, "pV": 33.3, "N": 0, "pN": 0.0, "P": 4, "pP": 66.7, "GF": 11, "MGF": 1.83, "GS": 12, "MGS": 2.0, "DR": -1, "PF": 425, "PS": 428.5, "FD": 0, "FDC": 0, "MPP": 70.83, "MPPS": 71.42}, {"opp": "Atletico Whalid", "G": 6, "V": 2, "pV": 33.3, "N": 1, "pN": 16.7, "P": 3, "pP": 50.0, "GF": 10, "MGF": 1.67, "GS": 15, "MGS": 2.5, "DR": -5, "PF": 424, "PS": 445, "FD": 0, "FDC": 0, "MPP": 70.67, "MPPS": 74.17}, {"opp": "Patatinaikos", "G": 4, "V": 2, "pV": 50.0, "N": 0, "pN": 0.0, "P": 2, "pP": 50.0, "GF": 9, "MGF": 2.25, "GS": 7, "MGS": 1.75, "DR": 2, "PF": 290, "PS": 285, "FD": 0, "FDC": 0, "MPP": 72.5, "MPPS": 71.25}, {"opp": "Team SHISH", "G": 2, "V": 0, "pV": 0.0, "N": 0, "pN": 0.0, "P": 2, "pP": 100.0, "GF": 0, "MGF": 0.0, "GS": 4, "MGS": 2.0, "DR": -4, "PF": 124, "PS": 142.5, "FD": 0, "FDC": 0, "MPP": 62.0, "MPPS": 71.25}, {"opp": "brazzers", "G": 2, "V": 1, "pV": 50.0, "N": 0, "pN": 0.0, "P": 1, "pP": 50.0, "GF": 5, "MGF": 2.5, "GS": 4, "MGS": 2.0, "DR": 1, "PF": 145.5, "PS": 143.5, "FD": 0, "FDC": 0, "MPP": 72.75, "MPPS": 71.75}]}, {"team": "PeScaramanzia", "rows": [{"opp": "ThePinkBlackEagles", "G": 0, "V": 0, "pV": 0.0, "N": 0, "pN": 0.0, "P": 0, "pP": 0.0, "GF": 0, "MGF": 0.0, "GS": 0, "MGS": 0.0, "DR": 0, "PF": 0, "PS": 0, "FD": 0, "FDC": 0, "MPP": 0.0, "MPPS": 0.0}, {"opp": "Virtus Basaglia", "G": 6, "V": 4, "pV": 66.7, "N": 0, "pN": 0.0, "P": 2, "pP": 33.3, "GF": 12, "MGF": 2.0, "GS": 11, "MGS": 1.83, "DR": 1, "PF": 428.5, "PS": 425, "FD": 0, "FDC": 0, "MPP": 71.42, "MPPS": 70.83}, {"opp": "Psv Endovena", "G": 6, "V": 2, "pV": 33.3, "N": 1, "pN": 16.7, "P": 3, "pP": 50.0, "GF": 18, "MGF": 3.0, "GS": 19, "MGS": 3.17, "DR": -1, "PF": 456, "PS": 457, "FD": 0, "FDC": 0, "MPP": 76.0, "MPPS": 76.17}, {"opp": "Atletico Whalid", "G": 5, "V": 2, "pV": 40.0, "N": 1, "pN": 20.0, "P": 2, "pP": 40.0, "GF": 7, "MGF": 1.4, "GS": 13, "MGS": 2.6, "DR": -6, "PF": 347, "PS": 372, "FD": 0, "FDC": 0, "MPP": 69.4, "MPPS": 74.4}, {"opp": "Patatinaikos", "G": 8, "V": 3, "pV": 37.5, "N": 2, "pN": 25.0, "P": 3, "pP": 37.5, "GF": 15, "MGF": 1.88, "GS": 13, "MGS": 1.62, "DR": 2, "PF": 510, "PS": 564, "FD": 1, "FDC": 0, "MPP": 72.86, "MPPS": 70.5}, {"opp": "Team SHISH", "G": 4, "V": 3, "pV": 75.0, "N": 0, "pN": 0.0, "P": 1, "pP": 25.0, "GF": 14, "MGF": 3.5, "GS": 4, "MGS": 1.0, "DR": 10, "PF": 305, "PS": 268, "FD": 0, "FDC": 0, "MPP": 76.25, "MPPS": 67.0}, {"opp": "brazzers", "G": 8, "V": 5, "pV": 62.5, "N": 1, "pN": 12.5, "P": 2, "pP": 25.0, "GF": 23, "MGF": 2.88, "GS": 14, "MGS": 1.75, "DR": 9, "PF": 600.5, "PS": 433, "FD": 0, "FDC": 2, "MPP": 75.06, "MPPS": 72.17}]}, {"team": "Atletico Whalid", "rows": [{"opp": "ThePinkBlackEagles", "G": 11, "V": 4, "pV": 36.4, "N": 3, "pN": 27.3, "P": 4, "pP": 36.4, "GF": 22, "MGF": 2.0, "GS": 20, "MGS": 1.82, "DR": 2, "PF": 785.5, "PS": 785.5, "FD": 0, "FDC": 0, "MPP": 71.41, "MPPS": 71.41}, {"opp": "Virtus Basaglia", "G": 6, "V": 3, "pV": 50.0, "N": 1, "pN": 16.7, "P": 2, "pP": 33.3, "GF": 15, "MGF": 2.5, "GS": 10, "MGS": 1.67, "DR": 5, "PF": 445, "PS": 424, "FD": 0, "FDC": 0, "MPP": 74.17, "MPPS": 70.67}, {"opp": "PeScaramanzia", "G": 5, "V": 2, "pV": 40.0, "N": 1, "pN": 20.0, "P": 2, "pP": 40.0, "GF": 13, "MGF": 2.6, "GS": 7, "MGS": 1.4, "DR": 6, "PF": 372, "PS": 347, "FD": 0, "FDC": 0, "MPP": 74.4, "MPPS": 69.4}, {"opp": "Psv Endovena", "G": 8, "V": 4, "pV": 50.0, "N": 3, "pN": 37.5, "P": 1, "pP": 12.5, "GF": 18, "MGF": 2.25, "GS": 13, "MGS": 1.62, "DR": 5, "PF": 573, "PS": 564, "FD": 0, "FDC": 0, "MPP": 71.62, "MPPS": 70.5}, {"opp": "Patatinaikos", "G": 1, "V": 1, "pV": 100.0, "N": 0, "pN": 0.0, "P": 0, "pP": 0.0, "GF": 3, "MGF": 3.0, "GS": 1, "MGS": 1.0, "DR": 2, "PF": 76, "PS": 69, "FD": 0, "FDC": 0, "MPP": 76.0, "MPPS": 69.0}, {"opp": "Team SHISH", "G": 4, "V": 3, "pV": 75.0, "N": 1, "pN": 25.0, "P": 0, "pP": 0.0, "GF": 9, "MGF": 2.25, "GS": 5, "MGS": 1.25, "DR": 4, "PF": 291, "PS": 275.5, "FD": 0, "FDC": 0, "MPP": 72.75, "MPPS": 68.88}, {"opp": "brazzers", "G": 7, "V": 3, "pV": 42.9, "N": 2, "pN": 28.6, "P": 2, "pP": 28.6, "GF": 16, "MGF": 2.29, "GS": 15, "MGS": 2.14, "DR": 1, "PF": 513.5, "PS": 509, "FD": 0, "FDC": 0, "MPP": 73.36, "MPPS": 72.71}]}, {"team": "Patatinaikos", "rows": [{"opp": "ThePinkBlackEagles", "G": 4, "V": 1, "pV": 25.0, "N": 2, "pN": 50.0, "P": 1, "pP": 25.0, "GF": 9, "MGF": 2.25, "GS": 9, "MGS": 2.25, "DR": 0, "PF": 289, "PS": 295, "FD": 0, "FDC": 0, "MPP": 72.25, "MPPS": 73.75}, {"opp": "Virtus Basaglia", "G": 4, "V": 2, "pV": 50.0, "N": 0, "pN": 0.0, "P": 2, "pP": 50.0, "GF": 7, "MGF": 1.75, "GS": 9, "MGS": 2.25, "DR": -2, "PF": 285, "PS": 290, "FD": 0, "FDC": 0, "MPP": 71.25, "MPPS": 72.5}, {"opp": "PeScaramanzia", "G": 8, "V": 3, "pV": 37.5, "N": 2, "pN": 25.0, "P": 3, "pP": 37.5, "GF": 13, "MGF": 1.62, "GS": 15, "MGS": 1.88, "DR": -2, "PF": 564, "PS": 510, "FD": 0, "FDC": 1, "MPP": 70.5, "MPPS": 72.86}, {"opp": "Atletico Whalid", "G": 1, "V": 0, "pV": 0.0, "N": 0, "pN": 0.0, "P": 1, "pP": 100.0, "GF": 1, "MGF": 1.0, "GS": 3, "MGS": 3.0, "DR": -2, "PF": 69, "PS": 76, "FD": 0, "FDC": 0, "MPP": 69.0, "MPPS": 76.0}, {"opp": "Psv Endovena", "G": 8, "V": 2, "pV": 25.0, "N": 4, "pN": 50.0, "P": 2, "pP": 25.0, "GF": 16, "MGF": 2.0, "GS": 15, "MGS": 1.88, "DR": 1, "PF": 575.5, "PS": 569, "FD": 0, "FDC": 0, "MPP": 71.94, "MPPS": 71.12}, {"opp": "Team SHISH", "G": 7, "V": 2, "pV": 28.6, "N": 4, "pN": 57.1, "P": 1, "pP": 14.3, "GF": 13, "MGF": 1.86, "GS": 10, "MGS": 1.43, "DR": 3, "PF": 494, "PS": 416.5, "FD": 0, "FDC": 1, "MPP": 70.57, "MPPS": 69.42}, {"opp": "brazzers", "G": 4, "V": 3, "pV": 75.0, "N": 1, "pN": 25.0, "P": 0, "pP": 0.0, "GF": 17, "MGF": 4.25, "GS": 10, "MGS": 2.5, "DR": 7, "PF": 324, "PS": 294.5, "FD": 0, "FDC": 0, "MPP": 81.0, "MPPS": 73.62}]}, {"team": "Team SHISH", "rows": [{"opp": "ThePinkBlackEagles", "G": 6, "V": 1, "pV": 16.7, "N": 2, "pN": 33.3, "P": 3, "pP": 50.0, "GF": 8, "MGF": 1.33, "GS": 14, "MGS": 2.33, "DR": -6, "PF": 416.5, "PS": 433.5, "FD": 0, "FDC": 0, "MPP": 69.42, "MPPS": 72.25}, {"opp": "Virtus Basaglia", "G": 2, "V": 2, "pV": 100.0, "N": 0, "pN": 0.0, "P": 0, "pP": 0.0, "GF": 4, "MGF": 2.0, "GS": 0, "MGS": 0.0, "DR": 4, "PF": 142.5, "PS": 124, "FD": 0, "FDC": 0, "MPP": 71.25, "MPPS": 62.0}, {"opp": "PeScaramanzia", "G": 4, "V": 1, "pV": 25.0, "N": 0, "pN": 0.0, "P": 3, "pP": 75.0, "GF": 4, "MGF": 1.0, "GS": 14, "MGS": 3.5, "DR": -10, "PF": 268, "PS": 305, "FD": 0, "FDC": 0, "MPP": 67.0, "MPPS": 76.25}, {"opp": "Atletico Whalid", "G": 4, "V": 0, "pV": 0.0, "N": 1, "pN": 25.0, "P": 3, "pP": 75.0, "GF": 5, "MGF": 1.25, "GS": 9, "MGS": 2.25, "DR": -4, "PF": 275.5, "PS": 291, "FD": 0, "FDC": 0, "MPP": 68.88, "MPPS": 72.75}, {"opp": "Patatinaikos", "G": 7, "V": 1, "pV": 14.3, "N": 4, "pN": 57.1, "P": 2, "pP": 28.6, "GF": 10, "MGF": 1.43, "GS": 13, "MGS": 1.86, "DR": -3, "PF": 416.5, "PS": 494, "FD": 1, "FDC": 0, "MPP": 69.42, "MPPS": 70.57}, {"opp": "Psv Endovena", "G": 2, "V": 0, "pV": 0.0, "N": 1, "pN": 50.0, "P": 1, "pP": 50.0, "GF": 3, "MGF": 1.5, "GS": 4, "MGS": 2.0, "DR": -1, "PF": 135.5, "PS": 142, "FD": 0, "FDC": 0, "MPP": 67.75, "MPPS": 71.0}, {"opp": "brazzers", "G": 8, "V": 4, "pV": 50.0, "N": 1, "pN": 12.5, "P": 3, "pP": 37.5, "GF": 13, "MGF": 1.62, "GS": 16, "MGS": 2.0, "DR": -3, "PF": 562, "PS": 573.5, "FD": 0, "FDC": 0, "MPP": 70.25, "MPPS": 71.69}]}, {"team": "brazzers", "rows": [{"opp": "ThePinkBlackEagles", "G": 4, "V": 2, "pV": 50.0, "N": 0, "pN": 0.0, "P": 2, "pP": 50.0, "GF": 10, "MGF": 2.5, "GS": 8, "MGS": 2.0, "DR": 2, "PF": 292.5, "PS": 288.5, "FD": 0, "FDC": 0, "MPP": 73.12, "MPPS": 72.12}, {"opp": "Virtus Basaglia", "G": 2, "V": 1, "pV": 50.0, "N": 0, "pN": 0.0, "P": 1, "pP": 50.0, "GF": 4, "MGF": 2.0, "GS": 5, "MGS": 2.5, "DR": -1, "PF": 143.5, "PS": 145.5, "FD": 0, "FDC": 0, "MPP": 71.75, "MPPS": 72.75}, {"opp": "PeScaramanzia", "G": 8, "V": 2, "pV": 25.0, "N": 1, "pN": 12.5, "P": 5, "pP": 62.5, "GF": 14, "MGF": 1.75, "GS": 23, "MGS": 2.88, "DR": -9, "PF": 433, "PS": 600.5, "FD": 2, "FDC": 0, "MPP": 72.17, "MPPS": 75.06}, {"opp": "Atletico Whalid", "G": 7, "V": 2, "pV": 28.6, "N": 2, "pN": 28.6, "P": 3, "pP": 42.9, "GF": 15, "MGF": 2.14, "GS": 16, "MGS": 2.29, "DR": -1, "PF": 509, "PS": 513.5, "FD": 0, "FDC": 0, "MPP": 72.71, "MPPS": 73.36}, {"opp": "Patatinaikos", "G": 4, "V": 0, "pV": 0.0, "N": 1, "pN": 25.0, "P": 3, "pP": 75.0, "GF": 10, "MGF": 2.5, "GS": 17, "MGS": 4.25, "DR": -7, "PF": 294.5, "PS": 324, "FD": 0, "FDC": 0, "MPP": 73.62, "MPPS": 81.0}, {"opp": "Team SHISH", "G": 8, "V": 3, "pV": 37.5, "N": 1, "pN": 12.5, "P": 4, "pP": 50.0, "GF": 16, "MGF": 2.0, "GS": 13, "MGS": 1.62, "DR": 3, "PF": 573.5, "PS": 562, "FD": 0, "FDC": 0, "MPP": 71.69, "MPPS": 70.25}, {"opp": "Psv Endovena", "G": 0, "V": 0, "pV": 0.0, "N": 0, "pN": 0.0, "P": 0, "pP": 0.0, "GF": 0, "MGF": 0.0, "GS": 0, "MGS": 0.0, "DR": 0, "PF": 0, "PS": 0, "FD": 0, "FDC": 0, "MPP": 0.0, "MPPS": 0.0}]}];
+
+// ---- ALBO ----
+function renderAlbo() {
+  document.getElementById('alboRows').innerHTML = alboData.map(d => `
+    <div class="albo-row">
+      <div class="albo-season">${d.season.replace('/','\n')}</div>
+      <div class="albo-team p1">${d.p1}${d.current ? '<span class="badge-current">In corso</span>' : ''}</div>
+      <div class="albo-team p2">${d.p2}</div>
+      <div class="albo-team p3">${d.p3}</div>
+      <div class="albo-team coppa">${d.coppa === '/' ? '—' : d.coppa}</div>
+      <div class="albo-team ultimo">${d.ultimo}</div>
+    </div>`).join('');
+  const champs = new Set(alboData.filter(d => !d.current).map(d => d.p1));
+  document.getElementById('totalChamps').textContent = champs.size;
+}
+
+// ---- PALMARES ----
+function renderPalmares() {
+  const sorted = [...palmaresData].sort((a,b) => b.p1 !== a.p1 ? b.p1 - a.p1 : b.p2 - a.p2);
+  document.getElementById('palmaresGrid').innerHTML = sorted.map(t => `
+    <div class="palmares-card">
+      <div class="palmares-name">${t.name}</div>
+      <div class="palmares-stats">
+        <div class="ps"><div class="ps-val gold">${t.p1}</div><div class="ps-label">🥇 Titoli</div></div>
+        <div class="ps"><div class="ps-val silver">${t.p2}</div><div class="ps-label">🥈 2° posto</div></div>
+        <div class="ps"><div class="ps-val bronze">${t.p3}</div><div class="ps-label">🥉 3° posto</div></div>
+        <div class="ps"><div class="ps-val cup">${t.coppa}</div><div class="ps-label">🏆 Coppe</div></div>
+        <div class="ps"><div class="ps-val last">${t.ultimo}</div><div class="ps-label">💀 Ultimi</div></div>
+      </div>
+    </div>`).join('');
+}
+
+// ---- RANKING ----
+function updateRanking(idx) {
+  const season = seasons[idx];
+  document.getElementById('seasonLabel').textContent = season;
+  const data = rankingData[season];
+  if (!data) return;
+  const sorted = [...data].sort((a,b) => b.pts - a.pts);
+  const maxPts = sorted[0].pts;
+  const trophies = {0:'🥇',1:'🥈',2:'🥉'};
+  document.getElementById('rankingList').innerHTML = sorted.map((t,i) => {
+    const isLast = i === sorted.length - 1;
+    const pct = Math.round((t.pts / maxPts) * 100);
+    const cls = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':isLast?'rank-last':'';
+    return `<div class="rank-row ${cls}">
+      <div class="rank-pos">${i+1}</div>
+      <div class="rank-name">${t.name}</div>
+      <div class="rank-bar-wrap"><div class="rank-bar" style="width:${pct}%"></div></div>
+      <div class="rank-pts">${t.pts.toFixed(2)}</div>
+      <div class="rank-trophy">${trophies[i]||(isLast?'💀':'')}</div>
+    </div>`;
+  }).join('');
+}
+
+// ---- SCONTRI ----
+function pctClass(p) { return p >= 50 ? 'pct-high' : p >= 35 ? 'pct-mid' : 'pct-low'; }
+function drClass(v) { return v > 0 ? 'val-pos' : v < 0 ? 'val-neg' : 'val-neu'; }
+
+function renderScontriTable(teamData) {
+  const rows = teamData.rows;
+  return `
+    <div class="sd-title">${teamData.team}</div>
+    <div class="sd-table-wrap">
+      <table class="sd-table">
+        <thead>
+          <tr>
+            <th>Avversario</th>
+            <th>G</th><th>V</th><th>V%</th>
+            <th>N</th><th>N%</th>
+            <th>P</th><th>P%</th>
+            <th>GF</th><th>MGF</th>
+            <th>GS</th><th>MGS</th>
+            <th>DR</th>
+            <th>PF</th><th>PS</th>
+            <th>FD</th><th>FDC</th>
+            <th>MPP</th><th>MPPS</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td>${r.opp}</td>
+              <td>${r.G}</td>
+              <td>${r.V}</td><td class="${pctClass(r.pV)}">${r.pV}%</td>
+              <td>${r.N}</td><td>${r.pN}%</td>
+              <td>${r.P}</td><td class="${pctClass(100-r.pP)}">${r.pP}%</td>
+              <td>${r.GF}</td><td>${r.MGF}</td>
+              <td>${r.GS}</td><td>${r.MGS}</td>
+              <td class="${drClass(r.DR)}">${r.DR > 0 ? '+'+r.DR : r.DR}</td>
+              <td>${r.PF}</td><td>${r.PS}</td>
+              <td>${r.FD}</td><td>${r.FDC}</td>
+              <td>${r.MPP}</td><td>${r.MPPS}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function initScontri(data, listId, panelId) {
+  const list = document.getElementById(listId);
+  const panel = document.getElementById(panelId);
+  list.innerHTML = data.map((t,i) => `
+    <button class="sd-team-btn${i===0?' active':''}" onclick="selectTeam('${listId}','${panelId}',${i})">${t.team}</button>
+  `).join('');
+  panel.innerHTML = renderScontriTable(data[0]);
+  list._data = data;
+}
+
+function selectTeam(listId, panelId, idx) {
+  const list = document.getElementById(listId);
+  const panel = document.getElementById(panelId);
+  list.querySelectorAll('.sd-team-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+  panel.innerHTML = renderScontriTable(list._data[idx]);
+}
+
+// ---- TABS ----
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ---- INIT ----
+renderAlbo();
+renderPalmares();
+updateRanking(10);
+initScontri(CAMP_DATA, 'campTeamList', 'campPanel');
+initScontri(COPPA_DATA, 'coppaTeamList', 'coppaPanel');
+
+const ACQUISTI_DATA = [{"ruolo": "Attaccanti", "emoji": "⚡", "rows": [{"giocatore": "Cristiano Ronaldo", "prezzo": 245, "acquirente": "Pedro", "anno": "2019/2020"}, {"giocatore": "Cristiano Ronaldo", "prezzo": 241, "acquirente": "Dave", "anno": "2020/2021", "link": "https://www.fantacalcio.it/serie-a/squadre/juventus/ronaldo/2610/2020-21"}, {"giocatore": "Higuain", "prezzo": 239, "acquirente": "Gaspa", "anno": "2019/2020"}, {"giocatore": "Immobile", "prezzo": 235, "acquirente": "Gabbo", "anno": "2019/2020"}, {"giocatore": "Zapata", "prezzo": 229, "acquirente": "Staffa", "anno": "2019/2020"}, {"giocatore": "Immobile", "prezzo": 215, "acquirente": "Dave", "anno": "2022/2023"}, {"giocatore": "Vlahovic", "prezzo": 215, "acquirente": "Pela", "anno": "2022/2023"}, {"giocatore": "Lukaku", "prezzo": 210, "acquirente": "Terra", "anno": "2020/2021"}, {"giocatore": "Osihmen", "prezzo": 210, "acquirente": "Olli", "anno": "2023/2024"}, {"giocatore": "Lukaku", "prezzo": 208, "acquirente": "Terra", "anno": "2019/2020"}, {"giocatore": "Lautaro Martinez", "prezzo": 203, "acquirente": "Olli", "anno": "2024/2025"}, {"giocatore": "Immobile", "prezzo": 201, "acquirente": "Olli", "anno": "2020/2021"}, {"giocatore": "Zapata", "prezzo": 200, "acquirente": "Pedro", "anno": "2020/2021"}, {"giocatore": "Lautaro Martinez", "prezzo": 199, "acquirente": "Pedro", "anno": "2022/2023"}, {"giocatore": "Lukaku", "prezzo": 193, "acquirente": "Pedro", "anno": "2024/2025"}, {"giocatore": "Lautaro Martinez", "prezzo": 190, "acquirente": "Pedro", "anno": "2023/2024"}, {"giocatore": "Cristiano Ronaldo", "prezzo": 190, "acquirente": "Terra", "anno": "2018/2019"}, {"giocatore": "Osihmen", "prezzo": 186, "acquirente": "Staffa", "anno": "2022/2023"}, {"giocatore": "Lautaro Martinez", "prezzo": 186, "acquirente": "Staffa", "anno": "2021/2022"}, {"giocatore": "Vlahovic", "prezzo": 186, "acquirente": "Dave", "anno": "2024/2025"}, {"giocatore": "Ibrahimovic", "prezzo": 185, "acquirente": "Staffa", "anno": "2020/2021"}, {"giocatore": "Higuain", "prezzo": 185, "acquirente": "Pela", "anno": "2018/2019"}, {"giocatore": "Immobile", "prezzo": 184, "acquirente": "Terra", "anno": "2021/2022"}, {"giocatore": "Immobile", "prezzo": 173, "acquirente": "Gabbo", "anno": "2023/2024"}, {"giocatore": "Muriel", "prezzo": 171, "acquirente": "Pela", "anno": "2021/2022"}, {"giocatore": "Thuram", "prezzo": 170, "acquirente": "Staffa", "anno": "2024/2025"}, {"giocatore": "Immobile", "prezzo": 164, "acquirente": "Gaspa", "anno": "2018/2019"}, {"giocatore": "Retegui", "prezzo": 163, "acquirente": "Terra", "anno": "2024/2025"}, {"giocatore": "Icardi", "prezzo": 162, "acquirente": "Gabbo", "anno": "2018/2019"}, {"giocatore": "Caputo", "prezzo": 161, "acquirente": "Pela", "anno": "2020/2021"}, {"giocatore": "Lukaku", "prezzo": 161, "acquirente": "Olli", "anno": "2022/2023"}, {"giocatore": "Leao", "prezzo": 160, "acquirente": "Dave", "anno": "2023/2024"}, {"giocatore": "Milik", "prezzo": 151, "acquirente": "Olli", "anno": "2018/2019"}, {"giocatore": "Vlahovic", "prezzo": 150, "acquirente": "Gabbo", "anno": "2021/2022"}, {"giocatore": "Leao", "prezzo": 150, "acquirente": "Terra", "anno": "2022/2023"}, {"giocatore": "Vlahovic", "prezzo": 150, "acquirente": "Staffa", "anno": "2023/2024"}, {"giocatore": "Kvaratskhelia", "prezzo": 150, "acquirente": "Terra", "anno": "2023/2024"}, {"giocatore": "Kean", "prezzo": 150, "acquirente": "Olli", "anno": "2025/2026"}, {"giocatore": "M.Thuram", "prezzo": 147, "acquirente": "Gaspa", "anno": "2025/2026"}, {"giocatore": "Dzeko", "prezzo": 145, "acquirente": "Dave", "anno": "2018/2019"}, {"giocatore": "Morata", "prezzo": 144, "acquirente": "Gaspa", "anno": "2024/2025"}, {"giocatore": "Lautaro Martinez", "prezzo": 144, "acquirente": "Pedro", "anno": "2025/2026"}, {"giocatore": "Dybala", "prezzo": 135, "acquirente": "Gaspa", "anno": "2021/2022"}, {"giocatore": "Osihmen", "prezzo": 130, "acquirente": "Dave", "anno": "2021/2022"}, {"giocatore": "Dovbyk", "prezzo": 130, "acquirente": "Pela", "anno": "2024/2025"}, {"giocatore": "Dybala", "prezzo": 125, "acquirente": "Gabbo", "anno": "2016/2017"}, {"giocatore": "Icardi", "prezzo": 125, "acquirente": "Miche", "anno": "2016/2017"}, {"giocatore": "Belotti", "prezzo": 123, "acquirente": "Gaspa", "anno": "2020/2021"}, {"giocatore": "Kvaratskhelia", "prezzo": 123, "acquirente": "Pela", "anno": "2024/2025"}, {"giocatore": "Abraham", "prezzo": 121, "acquirente": "Pedro", "anno": "2021/2022"}, {"giocatore": "Belotti", "prezzo": 121, "acquirente": "Staffa", "anno": "2018/2019"}, {"giocatore": "Milik", "prezzo": 121, "acquirente": "Staffa", "anno": "2016/2017"}, {"giocatore": "Immobile", "prezzo": 120, "acquirente": "Gaspa", "anno": "2016/2017"}, {"giocatore": "Bacca", "prezzo": 120, "acquirente": "Dave", "anno": "2016/2017"}, {"giocatore": "Hojlund", "prezzo": 120, "acquirente": "Gabbo", "anno": "2025/2026"}, {"giocatore": "David", "prezzo": 120, "acquirente": "Pela", "anno": "2025/2026"}, {"giocatore": "Leao", "prezzo": 115, "acquirente": "Pela", "anno": "2025/2026"}, {"giocatore": "Lookman", "prezzo": 113, "acquirente": "Gabbo", "anno": "2024/2025"}, {"giocatore": "Higuain", "prezzo": 110, "acquirente": "Pela", "anno": "2016/2017"}, {"giocatore": "Pavoletti", "prezzo": 107, "acquirente": "Terra", "anno": "2016/2017"}, {"giocatore": "Dybala", "prezzo": 106, "acquirente": "Pedro", "anno": "2018/2019"}, {"giocatore": "Salah", "prezzo": 105, "acquirente": "Terra", "anno": "2016/2017"}, {"giocatore": "Quagliarella", "prezzo": 103, "acquirente": "Dave", "anno": "2019/2020"}, {"giocatore": "Dybala", "prezzo": 102, "acquirente": "Pela", "anno": "2023/2024"}, {"giocatore": "Abraham", "prezzo": 102, "acquirente": "Gabbo", "anno": "2022/2023"}, {"giocatore": "Zapata", "prezzo": 102, "acquirente": "Gaspa", "anno": "2022/2023"}, {"giocatore": "Chiesa", "prezzo": 101, "acquirente": "Pela", "anno": "2023/2024"}, {"giocatore": "Berardi", "prezzo": 100, "acquirente": "Olli", "anno": "2016/2017"}]}, {"ruolo": "Centrocampisti", "emoji": "🎯", "rows": [{"giocatore": "Orsolini", "prezzo": 100, "acquirente": "Staffa", "anno": "2025/2026"}, {"giocatore": "Pulisic", "prezzo": 99, "acquirente": "Dave", "anno": "2025/2026"}, {"giocatore": "Papu Gomez", "prezzo": 98, "acquirente": "Gaspa", "anno": "2020/2021"}, {"giocatore": "Chiesa", "prezzo": 90, "acquirente": "Dave", "anno": "2021/2022"}, {"giocatore": "McTominay", "prezzo": 89, "acquirente": "Terra", "anno": "2025/2026"}, {"giocatore": "Nico Paz", "prezzo": 86, "acquirente": "Terra", "anno": "2025/2026"}, {"giocatore": "Kvaratskhelia", "prezzo": 85, "acquirente": "Pela", "anno": "2022/2023"}, {"giocatore": "Milinkovic-Savic", "prezzo": 76, "acquirente": "Gabbo", "anno": "2022/2023"}, {"giocatore": "Zaccagni", "prezzo": 75, "acquirente": "Dave", "anno": "2023/2024"}, {"giocatore": "Mkhitarian", "prezzo": 71, "acquirente": "Terra", "anno": "2021/2022"}, {"giocatore": "Zaccagni", "prezzo": 71, "acquirente": "Gabbo", "anno": "2025/2026"}, {"giocatore": "De Bruyne", "prezzo": 71, "acquirente": "Pela", "anno": "2025/2026"}, {"giocatore": "Milinkovic-Savic", "prezzo": 70, "acquirente": "Olli", "anno": "2021/2022"}, {"giocatore": "Luis Alberto", "prezzo": 70, "acquirente": "Pedro", "anno": "2021/2022"}, {"giocatore": "Pulisic", "prezzo": 70, "acquirente": "Gabbo", "anno": "2024/2025"}, {"giocatore": "Pellegrini", "prezzo": 67, "acquirente": "Gaspa", "anno": "2022/2023"}, {"giocatore": "Douglas Costa", "prezzo": 66, "acquirente": "Terra", "anno": "2019/2020"}, {"giocatore": "Calhanoglu", "prezzo": 65, "acquirente": "Dave", "anno": "2020/2021"}, {"giocatore": "Calhanoglu", "prezzo": 65, "acquirente": "Pedro", "anno": "2024/2025"}, {"giocatore": "Veretout", "prezzo": 64, "acquirente": "Pela", "anno": "2021/2022"}, {"giocatore": "Zaccagni", "prezzo": 64, "acquirente": "Terra", "anno": "2024/2025"}, {"giocatore": "De Ketelaere", "prezzo": 63, "acquirente": "Gaspa", "anno": "2022/2023"}, {"giocatore": "Luis Alberto", "prezzo": 62, "acquirente": "Pedro", "anno": "2020/2021"}, {"giocatore": "Pjanic", "prezzo": 61, "acquirente": "Pela", "anno": "2016/2017"}, {"giocatore": "Malinovski", "prezzo": 60, "acquirente": "Gaspa", "anno": "2021/2022"}, {"giocatore": "Perotti", "prezzo": 59, "acquirente": "Terra", "anno": "2016/2017"}, {"giocatore": "Douglas Costa", "prezzo": 58, "acquirente": "Terra", "anno": "2018/2019"}, {"giocatore": "Zaniolo", "prezzo": 56, "acquirente": "Dave", "anno": "2021/2022"}, {"giocatore": "Kulusevski", "prezzo": 55, "acquirente": "Terra", "anno": "2020/2021"}, {"giocatore": "Perisic", "prezzo": 55, "acquirente": "Gaspa", "anno": "2018/2019"}, {"giocatore": "Gudmundsson A.", "prezzo": 55, "acquirente": "Gaspa", "anno": "2025/2026"}, {"giocatore": "Felipe Anderson", "prezzo": 53, "acquirente": "Terra", "anno": "2023/2024"}, {"giocatore": "Luis Alberto", "prezzo": 52, "acquirente": "Gabbo", "anno": "2023/2024"}, {"giocatore": "Mkhitarian", "prezzo": 51, "acquirente": "Pela", "anno": "2020/2021"}, {"giocatore": "Chiesa", "prezzo": 51, "acquirente": "Pela", "anno": "2019/2020"}, {"giocatore": "Milinkovic-Savic", "prezzo": 51, "acquirente": "Olli", "anno": "2018/2019"}, {"giocatore": "Ilicic", "prezzo": 51, "acquirente": "Gabbo", "anno": "2016/2017"}, {"giocatore": "Pulisic", "prezzo": 51, "acquirente": "Terra", "anno": "2023/2024"}, {"giocatore": "Papu Gomez", "prezzo": 50, "acquirente": "Gabbo", "anno": "2019/2020"}, {"giocatore": "Felipe Anderson", "prezzo": 50, "acquirente": "Gabbo", "anno": "2021/2022"}, {"giocatore": "Calhanoglu", "prezzo": 50, "acquirente": "Olli", "anno": "2022/2023"}, {"giocatore": "Barella", "prezzo": 50, "acquirente": "Pedro", "anno": "2023/2024"}, {"giocatore": "Koopmeiners", "prezzo": 49, "acquirente": "Pela", "anno": "2024/2025"}, {"giocatore": "Hamsik", "prezzo": 48, "acquirente": "Olli", "anno": "2016/2017"}, {"giocatore": "Luis Alberto", "prezzo": 47, "acquirente": "Pedro", "anno": "2019/2020"}, {"giocatore": "Zielinski", "prezzo": 47, "acquirente": "Pela", "anno": "2018/2019"}, {"giocatore": "Luis Alberto", "prezzo": 47, "acquirente": "Pedro", "anno": "2018/2019"}, {"giocatore": "Candreva", "prezzo": 47, "acquirente": "Gaspa", "anno": "2016/2017"}, {"giocatore": "Man", "prezzo": 47, "acquirente": "Pela", "anno": "2024/2025"}, {"giocatore": "Neres", "prezzo": 47, "acquirente": "Gaspa", "anno": "2024/2025"}, {"giocatore": "Fabian Ruiz", "prezzo": 46, "acquirente": "Terra", "anno": "2019/2020"}, {"giocatore": "Pjanic", "prezzo": 46, "acquirente": "Pela", "anno": "2018/2019"}, {"giocatore": "Chiesa", "prezzo": 45, "acquirente": "Gabbo", "anno": "2018/2019"}, {"giocatore": "Zielinski", "prezzo": 43, "acquirente": "Pedro", "anno": "2021/2022"}, {"giocatore": "Veretout", "prezzo": 42, "acquirente": "Olli", "anno": "2020/2021"}, {"giocatore": "Malinovski", "prezzo": 42, "acquirente": "Staffa", "anno": "2020/2021"}, {"giocatore": "Koopmeiners", "prezzo": 42, "acquirente": "Terra", "anno": "2022/2023"}, {"giocatore": "Barella", "prezzo": 42, "acquirente": "Dave", "anno": "2022/2023"}, {"giocatore": "Felipe Anderson", "prezzo": 42, "acquirente": "Dave", "anno": "2022/2023"}, {"giocatore": "Barella", "prezzo": 42, "acquirente": "Pedro", "anno": "2024/2025"}, {"giocatore": "Rabiot", "prezzo": 42, "acquirente": "Olli", "anno": "2025/2026"}, {"giocatore": "De Paul", "prezzo": 41, "acquirente": "Olli", "anno": "2019/2020"}, {"giocatore": "Suso", "prezzo": 41, "acquirente": "Dave", "anno": "2019/2020"}, {"giocatore": "Milinkovic-Savic", "prezzo": 41, "acquirente": "Gaspa", "anno": "2019/2020"}, {"giocatore": "Brahim Diaz", "prezzo": 41, "acquirente": "Olli", "anno": "2021/2022"}, {"giocatore": "Kessie'", "prezzo": 41, "acquirente": "Pela", "anno": "2021/2022"}, {"giocatore": "Orsolini", "prezzo": 41, "acquirente": "Staffa", "anno": "2024/2025"}, {"giocatore": "Milinkovic-Savic", "prezzo": 40, "acquirente": "Olli", "anno": "2020/2021"}, {"giocatore": "Pastore", "prezzo": 40, "acquirente": "Dave", "anno": "2018/2019"}, {"giocatore": "Cahlanoglu", "prezzo": 40, "acquirente": "Dave", "anno": "2018/2019"}, {"giocatore": "Pellegrini", "prezzo": 40, "acquirente": "Staffa", "anno": "2021/2022"}, {"giocatore": "Zielinski", "prezzo": 40, "acquirente": "Terra", "anno": "2022/2023"}, {"giocatore": "Chukweze", "prezzo": 40, "acquirente": "Olli", "anno": "2023/2024"}, {"giocatore": "Koopmeiners", "prezzo": 40, "acquirente": "Staffa", "anno": "2023/2024"}, {"giocatore": "Callejon", "prezzo": 39, "acquirente": "Gaspa", "anno": "2019/2020"}, {"giocatore": "Malinovskyi", "prezzo": 39, "acquirente": "Pedro", "anno": "2022/2023"}, {"giocatore": "Rabiot", "prezzo": 39, "acquirente": "Pedro", "anno": "2023/2024"}, {"giocatore": "Strefezza", "prezzo": 39, "acquirente": "Gaspa", "anno": "2023/2024"}, {"giocatore": "K. Thuram", "prezzo": 39, "acquirente": "Gabbo", "anno": "2025/2026"}, {"giocatore": "Saponara", "prezzo": 38, "acquirente": "Pela", "anno": "2016/2017"}, {"giocatore": "Zaccagni", "prezzo": 38, "acquirente": "Olli", "anno": "2022/2023"}, {"giocatore": "Calhanoglu", "prezzo": 38, "acquirente": "Pedro", "anno": "2025/2026"}, {"giocatore": "Borja Valero", "prezzo": 37, "acquirente": "Olli", "anno": "2016/2017"}, {"giocatore": "Sensi", "prezzo": 36, "acquirente": "Pedro", "anno": "2019/2020"}, {"giocatore": "De Paul", "prezzo": 35, "acquirente": "Gaspa", "anno": "2020/2021"}, {"giocatore": "Suso", "prezzo": 35, "acquirente": "Olli", "anno": "2016/2017"}, {"giocatore": "Pereyra", "prezzo": 35, "acquirente": "Terra", "anno": "2021/2022"}, {"giocatore": "Kone m.", "prezzo": 35, "acquirente": "Pedro", "anno": "2025/2026"}]}, {"ruolo": "Difensori", "emoji": "🛡️", "rows": [{"giocatore": "Gosens", "prezzo": 70, "acquirente": "Gabbo", "anno": "2021/2022"}, {"giocatore": "Gosens", "prezzo": 65, "acquirente": "Pela", "anno": "2020/2021"}, {"giocatore": "Cuadrado", "prezzo": 62, "acquirente": "Pedro", "anno": "2021/2022"}, {"giocatore": "Theo Hernandez", "prezzo": 60, "acquirente": "Olli", "anno": "2020/2021"}, {"giocatore": "Theo Hernandez", "prezzo": 58, "acquirente": "Olli", "anno": "2021/2022"}, {"giocatore": "Theo Hernandez", "prezzo": 56, "acquirente": "Pedro", "anno": "2022/2023"}, {"giocatore": "Dimarco", "prezzo": 52, "acquirente": "Staffa", "anno": "2024/2025"}, {"giocatore": "Theo Hernandez", "prezzo": 52, "acquirente": "Gaspa", "anno": "2024/2025"}, {"giocatore": "Hakimi", "prezzo": 50, "acquirente": "Gabbo", "anno": "2020/2021"}, {"giocatore": "Theo Hernandez", "prezzo": 50, "acquirente": "Gaspa", "anno": "2023/2024"}, {"giocatore": "Dumfries", "prezzo": 49, "acquirente": "Olli", "anno": "2022/2023"}, {"giocatore": "Dumfries", "prezzo": 49, "acquirente": "Terra", "anno": "2025/2026"}, {"giocatore": "Kolarov", "prezzo": 48, "acquirente": "Pela", "anno": "2019/2020"}, {"giocatore": "Dimarco", "prezzo": 46, "acquirente": "Olli", "anno": "2023/2024"}, {"giocatore": "Di Lorenzo", "prezzo": 42, "acquirente": "Pedro", "anno": "2023/2024"}, {"giocatore": "Dimarco", "prezzo": 40, "acquirente": "Dave", "anno": "2025/2026"}, {"giocatore": "Bremer", "prezzo": 39, "acquirente": "Terra", "anno": "2025/2026"}, {"giocatore": "Kolarov", "prezzo": 38, "acquirente": "Dave", "anno": "2018/2019"}, {"giocatore": "Gosens", "prezzo": 37, "acquirente": "Pedro", "anno": "2025/2026"}, {"giocatore": "Izzo", "prezzo": 36, "acquirente": "Gabbo", "anno": "2019/2020"}, {"giocatore": "Skriniar", "prezzo": 36, "acquirente": "Gaspa", "anno": "2019/2020"}, {"giocatore": "Mahele", "prezzo": 36, "acquirente": "Pela", "anno": "2021/2022"}, {"giocatore": "Bremer", "prezzo": 36, "acquirente": "Staffa", "anno": "2022/2023"}, {"giocatore": "Joao Cancelo", "prezzo": 35, "acquirente": "Gabbo", "anno": "2018/2019"}, {"giocatore": "Skriniar", "prezzo": 35, "acquirente": "Pela", "anno": "2018/2019"}, {"giocatore": "Alex Sandro", "prezzo": 35, "acquirente": "Dave", "anno": "2019/2020"}, {"giocatore": "Alex Sandro", "prezzo": 34, "acquirente": "Staffa", "anno": "2018/2019"}, {"giocatore": "De Vrij", "prezzo": 33, "acquirente": "Terra", "anno": "2018/2019"}, {"giocatore": "Koulibaly", "prezzo": 33, "acquirente": "Gaspa", "anno": "2018/2019"}, {"giocatore": "De Ligt", "prezzo": 33, "acquirente": "Staffa", "anno": "2019/2020"}, {"giocatore": "Koulibaly", "prezzo": 33, "acquirente": "Terra", "anno": "2019/2020"}, {"giocatore": "Di Lorenzo", "prezzo": 33, "acquirente": "Gaspa", "anno": "2025/2026"}, {"giocatore": "De Vrij", "prezzo": 32, "acquirente": "Pedro", "anno": "2020/2021"}, {"giocatore": "Spinazzola", "prezzo": 32, "acquirente": "Pedro", "anno": "2022/2023"}, {"giocatore": "Bastoni", "prezzo": 32, "acquirente": "Gabbo", "anno": "2025/2026"}, {"giocatore": "Hateboer", "prezzo": 31, "acquirente": "Pedro", "anno": "2020/2021"}, {"giocatore": "Tomori", "prezzo": 31, "acquirente": "Staffa", "anno": "2022/2023"}, {"giocatore": "Smalling", "prezzo": 31, "acquirente": "Dave", "anno": "2022/2023"}, {"giocatore": "Alex Sandro", "prezzo": 30, "acquirente": "Gabbo", "anno": "2016/2017"}, {"giocatore": "Kalulu", "prezzo": 30, "acquirente": "Gabbo", "anno": "2022/2023"}, {"giocatore": "Skriniar", "prezzo": 30, "acquirente": "Pela", "anno": "2022/2023"}, {"giocatore": "Smalling", "prezzo": 30, "acquirente": "Gabbo", "anno": "2023/2024"}, {"giocatore": "Danilo", "prezzo": 30, "acquirente": "Pela", "anno": "2023/2024"}, {"giocatore": "Bremer", "prezzo": 30, "acquirente": "Dave", "anno": "2023/2024"}, {"giocatore": "Bremer", "prezzo": 30, "acquirente": "Gabbo", "anno": "2024/2025"}, {"giocatore": "Angelino", "prezzo": 30, "acquirente": "Olli", "anno": "2025/2026"}, {"giocatore": "Criscito", "prezzo": 29, "acquirente": "Olli", "anno": "2019/2020"}, {"giocatore": "Mancini", "prezzo": 29, "acquirente": "Gabbo", "anno": "2021/2022"}, {"giocatore": "Dumfries", "prezzo": 29, "acquirente": "Terra", "anno": "2021/2022"}, {"giocatore": "Skriniar", "prezzo": 29, "acquirente": "Pedro", "anno": "2021/2022"}, {"giocatore": "Danilo", "prezzo": 29, "acquirente": "Terra", "anno": "2022/2023"}, {"giocatore": "Wesley", "prezzo": 29, "acquirente": "Pela", "anno": "2025/2026"}, {"giocatore": "Cambiaso", "prezzo": 29, "acquirente": "Staffa", "anno": "2025/2026"}, {"giocatore": "Bonucci", "prezzo": 28, "acquirente": "Pela", "anno": "2016/2017"}, {"giocatore": "Manolas", "prezzo": 28, "acquirente": "Pela", "anno": "2019/2020"}, {"giocatore": "Di Lorenzo", "prezzo": 28, "acquirente": "Olli", "anno": "2022/2023"}, {"giocatore": "Florenzi", "prezzo": 27, "acquirente": "Olli", "anno": "2016/2017"}, {"giocatore": "Hateboer", "prezzo": 27, "acquirente": "Olli", "anno": "2019/2020"}, {"giocatore": "Faraoni", "prezzo": 27, "acquirente": "Gaspa", "anno": "2020/2021"}, {"giocatore": "De Ligt", "prezzo": 27, "acquirente": "Staffa", "anno": "2021/2022"}, {"giocatore": "Tomori", "prezzo": 27, "acquirente": "Dave", "anno": "2021/2022"}, {"giocatore": "De Vrij", "prezzo": 27, "acquirente": "Gaspa", "anno": "2021/2022"}, {"giocatore": "Singo", "prezzo": 27, "acquirente": "Dave", "anno": "2022/2023"}, {"giocatore": "Bellanova", "prezzo": 27, "acquirente": "Dave", "anno": "2024/2025"}, {"giocatore": "Manolas", "prezzo": 26, "acquirente": "Pela", "anno": "2018/2019"}, {"giocatore": "Milenkovic", "prezzo": 26, "acquirente": "Dave", "anno": "2020/2021"}, {"giocatore": "Koulibaly", "prezzo": 26, "acquirente": "Olli", "anno": "2021/2022"}, {"giocatore": "A. Bastoni", "prezzo": 26, "acquirente": "Terra", "anno": "2022/2023"}, {"giocatore": "Udogie", "prezzo": 26, "acquirente": "Gaspa", "anno": "2022/2023"}, {"giocatore": "Dumfries", "prezzo": 26, "acquirente": "Gaspa", "anno": "2023/2024"}, {"giocatore": "Tavares", "prezzo": 26, "acquirente": "Dave", "anno": "2025/2026"}, {"giocatore": "Dodo", "prezzo": 26, "acquirente": "Dave", "anno": "2025/2026"}, {"giocatore": "Caldara", "prezzo": 25, "acquirente": "Olli", "anno": "2018/2019"}, {"giocatore": "Acerbi", "prezzo": 25, "acquirente": "Staffa", "anno": "2019/2020"}, {"giocatore": "Rrahmani", "prezzo": 25, "acquirente": "Gabbo", "anno": "2023/2024"}, {"giocatore": "Carlos Augusto", "prezzo": 25, "acquirente": "Pela", "anno": "2023/2024"}, {"giocatore": "Cambiaso", "prezzo": 25, "acquirente": "Olli", "anno": "2024/2025"}, {"giocatore": "Bellanova", "prezzo": 25, "acquirente": "Gabbo", "anno": "2025/2026"}, {"giocatore": "Buongiorno", "prezzo": 25, "acquirente": "Olli", "anno": "2025/2026"}, {"giocatore": "Florenzi", "prezzo": 24, "acquirente": "Dave", "anno": "2019/2020"}, {"giocatore": "Koulibaly", "prezzo": 24, "acquirente": "Dave", "anno": "2020/2021"}, {"giocatore": "Young", "prezzo": 24, "acquirente": "Terra", "anno": "2020/2021"}, {"giocatore": "Chiellini", "prezzo": 23, "acquirente": "Terra", "anno": "2016/2017"}, {"giocatore": "Acerbi", "prezzo": 23, "acquirente": "Gaspa", "anno": "2020/2021"}, {"giocatore": "Bastoni", "prezzo": 23, "acquirente": "Olli", "anno": "2024/2025"}, {"giocatore": "Buongiorno", "prezzo": 23, "acquirente": "Olli", "anno": "2024/2025"}, {"giocatore": "Solet", "prezzo": 23, "acquirente": "Olli", "anno": "2025/2026"}, {"giocatore": "Dani Alves", "prezzo": 22, "acquirente": "Miche", "anno": "2016/2017"}, {"giocatore": "Bonucci", "prezzo": 22, "acquirente": "Pedro", "anno": "2018/2019"}, {"giocatore": "Florenzi", "prezzo": 22, "acquirente": "Pedro", "anno": "2018/2019"}, {"giocatore": "De Vrij", "prezzo": 22, "acquirente": "Staffa", "anno": "2019/2020"}, {"giocatore": "Bonucci", "prezzo": 22, "acquirente": "Terra", "anno": "2019/2020"}, {"giocatore": "Godin", "prezzo": 22, "acquirente": "Pedro", "anno": "2019/2020"}, {"giocatore": "de Ligt", "prezzo": 22, "acquirente": "Staffa", "anno": "2020/2021"}, {"giocatore": "Cuadrado", "prezzo": 22, "acquirente": "Dave", "anno": "2020/2021"}, {"giocatore": "Criscito", "prezzo": 22, "acquirente": "Terra", "anno": "2020/2021"}, {"giocatore": "Kim", "prezzo": 22, "acquirente": "Gaspa", "anno": "2022/2023"}, {"giocatore": "Posch", "prezzo": 22, "acquirente": "Staffa", "anno": "2023/2024"}, {"giocatore": "Zappacosta", "prezzo": 22, "acquirente": "Terra", "anno": "2023/2024"}, {"giocatore": "Barzagli", "prezzo": 21, "acquirente": "Dave", "anno": "2016/2017"}, {"giocatore": "De Vrij", "prezzo": 21, "acquirente": "Terra", "anno": "2016/2017"}, {"giocatore": "Romagnoli", "prezzo": 21, "acquirente": "Staffa", "anno": "2020/2021"}, {"giocatore": "Bastoni", "prezzo": 21, "acquirente": "Olli", "anno": "2023/2024"}, {"giocatore": "Di Lorenzo", "prezzo": 21, "acquirente": "Pedro", "anno": "2024/2025"}, {"giocatore": "Manolas", "prezzo": 20, "acquirente": "Gabbo", "anno": "2016/2017"}, {"giocatore": "Koulibaly", "prezzo": 20, "acquirente": "Dave", "anno": "2016/2017"}, {"giocatore": "Miranda", "prezzo": 20, "acquirente": "Miche", "anno": "2016/2017"}, {"giocatore": "Romagnoli A.", "prezzo": 20, "acquirente": "Dave", "anno": "2019/2020"}, {"giocatore": "Smalling", "prezzo": 20, "acquirente": "Pela", "anno": "2020/2021"}, {"giocatore": "Bonucci", "prezzo": 20, "acquirente": "Terra", "anno": "2020/2021"}, {"giocatore": "Lazzari", "prezzo": 20, "acquirente": "Staffa", "anno": "2021/2022"}, {"giocatore": "Cuadrado", "prezzo": 20, "acquirente": "Gabbo", "anno": "2023/2024"}]}, {"ruolo": "Portieri", "emoji": "🧤", "rows": [{"giocatore": "Szczesny", "prezzo": 65, "acquirente": "Pela", "anno": "2023/2024"}, {"giocatore": "Maignan", "prezzo": 65, "acquirente": "Dave", "anno": "2023/2024"}, {"giocatore": "Meret", "prezzo": 59, "acquirente": "Terra", "anno": "2023/2024"}, {"giocatore": "Sommer", "prezzo": 57, "acquirente": "Gabbo", "anno": "2023/2024"}, {"giocatore": "Sommer", "prezzo": 54, "acquirente": "Gabbo", "anno": "2024/2025"}, {"giocatore": "Szczesny", "prezzo": 51, "acquirente": "Pela", "anno": "2022/2023"}, {"giocatore": "Maignan", "prezzo": 51, "acquirente": "Gaspa", "anno": "2022/2023"}, {"giocatore": "Di Gregorio", "prezzo": 51, "acquirente": "Pela", "anno": "2024/2025"}, {"giocatore": "Handanovic", "prezzo": 48, "acquirente": "Terra", "anno": "2020/2021"}, {"giocatore": "Svilar", "prezzo": 45, "acquirente": "Gabbo", "anno": "2025/2026"}, {"giocatore": "Maignan", "prezzo": 45, "acquirente": "Pela", "anno": "2025/2026"}, {"giocatore": "Di Gregorio", "prezzo": 44, "acquirente": "Dave", "anno": "2025/2026"}, {"giocatore": "Szczesny", "prezzo": 43, "acquirente": "Pela", "anno": "2020/2021"}, {"giocatore": "Szczesny", "prezzo": 42, "acquirente": "Pela", "anno": "2019/2020"}, {"giocatore": "Handanovic", "prezzo": 42, "acquirente": "Pela", "anno": "2021/2022"}, {"giocatore": "Maignan", "prezzo": 41, "acquirente": "Dave", "anno": "2021/2022"}, {"giocatore": "Szczesny", "prezzo": 40, "acquirente": "Pedro", "anno": "2021/2022"}, {"giocatore": "Handanovic", "prezzo": 40, "acquirente": "Gabbo", "anno": "2022/2023"}, {"giocatore": "Donnarumma", "prezzo": 39, "acquirente": "Dave", "anno": "2020/2021"}, {"giocatore": "Provedel", "prezzo": 39, "acquirente": "Staffa", "anno": "2023/2024"}, {"giocatore": "Sommer", "prezzo": 39, "acquirente": "Staffa", "anno": "2025/2026"}, {"giocatore": "Handanovic", "prezzo": 38, "acquirente": "Gabbo", "anno": "2019/2020"}, {"giocatore": "Musso", "prezzo": 38, "acquirente": "Gaspa", "anno": "2021/2022"}, {"giocatore": "Milinkovic-Savic", "prezzo": 38, "acquirente": "Pedro", "anno": "2025/2026"}, {"giocatore": "Maignan", "prezzo": 37, "acquirente": "Dave", "anno": "2024/2025"}, {"giocatore": "Buffon", "prezzo": 36, "acquirente": "Pela", "anno": "2016/2017"}, {"giocatore": "Rui Patricio", "prezzo": 36, "acquirente": "Gabbo", "anno": "2021/2022"}, {"giocatore": "Rui Patricio", "prezzo": 35, "acquirente": "Gaspa", "anno": "2023/2024"}, {"giocatore": "Donnarumma", "prezzo": 34, "acquirente": "Terra", "anno": "2019/2020"}, {"giocatore": "Strakosha", "prezzo": 34, "acquirente": "Gabbo", "anno": "2020/2021"}, {"giocatore": "Rui Patricio", "prezzo": 34, "acquirente": "Olli", "anno": "2022/2023"}, {"giocatore": "Meret", "prezzo": 33, "acquirente": "Pedro", "anno": "2019/2020"}, {"giocatore": "Svilar", "prezzo": 33, "acquirente": "Gaspa", "anno": "2024/2025"}, {"giocatore": "Meret", "prezzo": 32, "acquirente": "Olli", "anno": "2021/2022"}, {"giocatore": "Szczesny", "prezzo": 31, "acquirente": "Pela", "anno": "2018/2019"}, {"giocatore": "Sirigu", "prezzo": 31, "acquirente": "Gaspa", "anno": "2019/2020"}, {"giocatore": "De Gea", "prezzo": 31, "acquirente": "Olli", "anno": "2025/2026"}, {"giocatore": "Handanovic", "prezzo": 30, "acquirente": "Gabbo", "anno": "2018/2019"}, {"giocatore": "Meret", "prezzo": 29, "acquirente": "Gaspa", "anno": "2018/2019"}, {"giocatore": "Meret", "prezzo": 29, "acquirente": "Olli", "anno": "2024/2025"}, {"giocatore": "Donnarumma", "prezzo": 28, "acquirente": "Staffa", "anno": "2018/2019"}, {"giocatore": "Ospina", "prezzo": 28, "acquirente": "Pedro", "anno": "2020/2021"}, {"giocatore": "Strakosha", "prezzo": 27, "acquirente": "Dave", "anno": "2018/2019"}, {"giocatore": "Olsen", "prezzo": 27, "acquirente": "Pedro", "anno": "2018/2019"}, {"giocatore": "Gollini", "prezzo": 26, "acquirente": "Staffa", "anno": "2019/2020"}, {"giocatore": "Meret", "prezzo": 26, "acquirente": "Pedro", "anno": "2022/2023"}, {"giocatore": "Meret", "prezzo": 26, "acquirente": "Gaspa", "anno": "2025/2026"}, {"giocatore": "Carnesecchi", "prezzo": 26, "acquirente": "Gaspa", "anno": "2025/2026"}, {"giocatore": "Carnesecchi", "prezzo": 25, "acquirente": "Olli", "anno": "2023/2024"}, {"giocatore": "Provedel", "prezzo": 24, "acquirente": "Staffa", "anno": "2024/2025"}, {"giocatore": "Musso", "prezzo": 21, "acquirente": "Olli", "anno": "2023/2024"}, {"giocatore": "Carnesecchi", "prezzo": 20, "acquirente": "Terra", "anno": "2024/2025"}]}];
+
+function renderAcquisti(ruoloIdx) {
+  const ruolo = ACQUISTI_DATA[ruoloIdx];
+  const maxPrice = Math.max(...ruolo.rows.map(r => r.prezzo || 0));
+  // Tabs
+  document.querySelectorAll('.acq-role-btn').forEach((b,i) => b.classList.toggle('active', i===ruoloIdx));
+  // Table
+  document.getElementById('acqTable').innerHTML = `
+    <div class="acq-table-wrap">
+      <table class="acq-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Giocatore</th>
+            <th>Acquirente</th>
+            <th>Anno</th>
+            <th class="right">Prezzo</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${ruolo.rows.map((r, i) => `
+            <tr>
+              <td class="acq-rank">${i+1}</td>
+              <td class="acq-player">${r.link ? `<a href="${r.link}" target="_blank" class="acq-link">${r.giocatore} <span class="acq-link-icon">↗</span></a>` : r.giocatore}</td>
+              <td>${r.acquirente}</td>
+              <td class="acq-year">${r.anno}</td>
+              <td>
+                <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;">
+                  <div class="acq-price-bar-wrap"><div class="acq-price-bar" style="width:${Math.round((r.prezzo/maxPrice)*100)}%"></div></div>
+                  <span class="acq-price">${r.prezzo}</span>
+                </div>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function initAcquisti() {
+  document.getElementById('acqRoleTabs').innerHTML = ACQUISTI_DATA.map((r, i) =>
+    `<button class="acq-role-btn${i===0?' active':''}" onclick="renderAcquisti(${i})">
+      <span class="acq-role-emoji">${r.emoji}</span> ${r.ruolo}
+    </button>`
+  ).join('');
+  renderAcquisti(0);
+}
+
+initAcquisti();
+
+
+const FLUSSI_DATA = [{"team": "Psv Endovena", "rows": [{"annata": "2017/2018", "entrate": 35, "uscite": -15}, {"annata": "2018/2019", "entrate": 50, "uscite": -15}, {"annata": "2019/2020", "entrate": 50, "uscite": -15}, {"annata": "2020/2021", "entrate": 45, "uscite": -20}, {"annata": "2021/2022", "entrate": 0, "uscite": -20}, {"annata": "2022/2023", "entrate": 0, "uscite": -20}, {"annata": "2023/2024", "entrate": 0, "uscite": -20}, {"annata": "2024/2025", "entrate": 0, "uscite": -30}, {"annata": "2025/2026", "entrate": 0, "uscite": -30}], "tot_entrate": 130, "tot_uscite": -185, "saldo": -55}, {"team": "Atletico Whalid", "rows": [{"annata": "2017/2018", "entrate": 50, "uscite": -15}, {"annata": "2018/2019", "entrate": 35, "uscite": -15}, {"annata": "2019/2020", "entrate": 0, "uscite": -15}, {"annata": "2020/2021", "entrate": 35, "uscite": -20}, {"annata": "2021/2022", "entrate": 25, "uscite": -25}, {"annata": "2022/2023", "entrate": 0, "uscite": -20}, {"annata": "2023/2024", "entrate": 60, "uscite": -20}, {"annata": "2024/2025", "entrate": 100, "uscite": -30}, {"annata": "2025/2026", "entrate": 0, "uscite": -30}], "tot_entrate": 305, "tot_uscite": -190, "saldo": 115}, {"team": "Brazzers", "rows": [{"annata": "2017/2018", "entrate": 0, "uscite": -15}, {"annata": "2018/2019", "entrate": 25, "uscite": -15}, {"annata": "2019/2020", "entrate": 35, "uscite": -15}, {"annata": "2020/2021", "entrate": 60, "uscite": -20}, {"annata": "2021/2022", "entrate": 0, "uscite": -20}, {"annata": "2022/2023", "entrate": 60, "uscite": -20}, {"annata": "2023/2024", "entrate": 0, "uscite": -20}, {"annata": "2024/2025", "entrate": 75, "uscite": -30}, {"annata": "2025/2026", "entrate": 0, "uscite": -35}], "tot_entrate": 220, "tot_uscite": -190, "saldo": 30}, {"team": "ThePinkBlackEagles", "rows": [{"annata": "2017/2018", "entrate": 0, "uscite": -20}, {"annata": "2018/2019", "entrate": 0, "uscite": -15}, {"annata": "2019/2020", "entrate": 0, "uscite": -15}, {"annata": "2020/2021", "entrate": 0, "uscite": -20}, {"annata": "2021/2022", "entrate": 60, "uscite": -20}, {"annata": "2022/2023", "entrate": 60, "uscite": -20}, {"annata": "2023/2024", "entrate": 0, "uscite": -20}, {"annata": "2024/2025", "entrate": 0, "uscite": -30}, {"annata": "2025/2026", "entrate": 40, "uscite": -30}], "tot_entrate": 160, "tot_uscite": -190, "saldo": -30}, {"team": "Virtus Basaglia", "rows": [{"annata": "2017/2018", "entrate": 0, "uscite": -15}, {"annata": "2018/2019", "entrate": 0, "uscite": -20}, {"annata": "2019/2020", "entrate": 25, "uscite": -15}, {"annata": "2020/2021", "entrate": 0, "uscite": -20}, {"annata": "2021/2022", "entrate": 0, "uscite": -20}, {"annata": "2022/2023", "entrate": 0, "uscite": -25}, {"annata": "2023/2024", "entrate": 0, "uscite": -25}, {"annata": "2024/2025", "entrate": 0, "uscite": -30}, {"annata": "2025/2026", "entrate": 0, "uscite": -30}], "tot_entrate": 0, "tot_uscite": -200, "saldo": -200}, {"team": "Team SHISH", "rows": [{"annata": "2017/2018", "entrate": 0, "uscite": -15}, {"annata": "2018/2019", "entrate": 0, "uscite": -15}, {"annata": "2019/2020", "entrate": 0, "uscite": -15}, {"annata": "2020/2021", "entrate": 0, "uscite": -25}, {"annata": "2021/2022", "entrate": 45, "uscite": -20}, {"annata": "2022/2023", "entrate": 0, "uscite": -20}, {"annata": "2023/2024", "entrate": 0, "uscite": -20}, {"annata": "2024/2025", "entrate": 0, "uscite": -35}, {"annata": "2025/2026", "entrate": 105, "uscite": -30}], "tot_entrate": 150, "tot_uscite": -195, "saldo": -45}, {"team": "PeScaramanzia", "rows": [{"annata": "2017/2018", "entrate": 15, "uscite": -15}, {"annata": "2018/2019", "entrate": 15, "uscite": -15}, {"annata": "2019/2020", "entrate": 0, "uscite": -15}, {"annata": "2020/2021", "entrate": 25, "uscite": -20}, {"annata": "2021/2022", "entrate": 35, "uscite": -20}, {"annata": "2022/2023", "entrate": 45, "uscite": -20}, {"annata": "2023/2024", "entrate": 60, "uscite": -20}, {"annata": "2024/2025", "entrate": 0, "uscite": -30}, {"annata": "2025/2026", "entrate": 100, "uscite": -30}], "tot_entrate": 295, "tot_uscite": -185, "saldo": 110}, {"team": "Patatinaikos", "rows": [{"annata": "2017/2018", "entrate": 25, "uscite": -15}, {"annata": "2018/2019", "entrate": 0, "uscite": -15}, {"annata": "2019/2020", "entrate": 0, "uscite": -15}, {"annata": "2020/2021", "entrate": 0, "uscite": -20}, {"annata": "2021/2022", "entrate": 0, "uscite": -20}, {"annata": "2022/2023", "entrate": 0, "uscite": -20}, {"annata": "2023/2024", "entrate": 45, "uscite": -20}, {"annata": "2024/2025", "entrate": 70, "uscite": -30}, {"annata": "2025/2026", "entrate": 0, "uscite": -30}], "tot_entrate": 140, "tot_uscite": -185, "saldo": -45}];
+
+function initFlussi() {
+  // Summary cards
+  const maxSaldo = Math.max(...FLUSSI_DATA.map(t => t.saldo));
+  const minSaldo = Math.min(...FLUSSI_DATA.map(t => t.saldo));
+  const topTeam = FLUSSI_DATA.reduce((a,b) => b.saldo > a.saldo ? b : a);
+  const botTeam = FLUSSI_DATA.reduce((a,b) => b.saldo < a.saldo ? b : a);
+  const totEntrate = FLUSSI_DATA.reduce((s,t) => s + t.tot_entrate, 0);
+
+  document.getElementById('flussiSummary').innerHTML = `
+    <div class="flussi-summary-card"><div class="flussi-summary-label">Miglior bilancio</div><div class="flussi-summary-val pos">+${topTeam.saldo}</div><div style="font-size:12px;color:var(--muted);margin-top:4px">${topTeam.team}</div></div>
+    <div class="flussi-summary-card"><div class="flussi-summary-label">Peggior bilancio</div><div class="flussi-summary-val neg">${botTeam.saldo}</div><div style="font-size:12px;color:var(--muted);margin-top:4px">${botTeam.team}</div></div>
+    <div class="flussi-summary-card"><div class="flussi-summary-label">Premi totali distribuiti</div><div class="flussi-summary-val neu">${totEntrate}</div><div style="font-size:12px;color:var(--muted);margin-top:4px">crediti in totale</div></div>
+    <div class="flussi-summary-card"><div class="flussi-summary-label">Stagioni tracciate</div><div class="flussi-summary-val neu">9</div><div style="font-size:12px;color:var(--muted);margin-top:4px">dal 2017/18 al 2025/26</div></div>
+  `;
+
+  const maxE = Math.max(...FLUSSI_DATA.flatMap(t => t.rows.map(r => r.entrate)));
+
+  document.getElementById('flussiGrid').innerHTML = FLUSSI_DATA
+    .sort((a,b) => b.saldo - a.saldo)
+    .map(t => {
+      const saldoClass = t.saldo > 0 ? 'pos' : t.saldo < 0 ? 'neg' : 'neu';
+      const saldoStr = t.saldo > 0 ? '+' + t.saldo : String(t.saldo);
+      const rows = t.rows.map(r => {
+        const net = r.entrate + r.uscite;
+        const netClass = net > 0 ? 'pos' : net < 0 ? 'neg' : 'neu';
+        const netStr = net > 0 ? '+' + net : String(net);
+        const ePct = Math.round((r.entrate / maxE) * 100);
+        const uPct = Math.round((Math.abs(r.uscite) / maxE) * 100);
+        return `
+          <div class="flussi-row">
+            <div class="flussi-row-year">${r.annata}</div>
+            <div class="flussi-bar-wrap"><div class="flussi-bar-e" style="width:${ePct}%"></div></div>
+            <div class="flussi-bar-wrap"><div class="flussi-bar-u" style="width:${uPct}%"></div></div>
+            <div class="flussi-net ${netClass}">${netStr}</div>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="flussi-card">
+          <div class="flussi-card-header">
+            <div>
+              <div class="flussi-team-name">${t.team}</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Entrate ${t.tot_entrate} · Uscite ${t.tot_uscite}</div>
+            </div>
+            <div class="flussi-saldo ${saldoClass}">${saldoStr}</div>
+          </div>
+          <div class="flussi-row-header">
+            <span>Stagione</span><span>Entrate</span><span>Uscite</span><span>Netto</span>
+          </div>
+          <div class="flussi-rows">${rows}</div>
+        </div>`;
+    }).join('');
+}
+
+initFlussi();
+
+</script>
+</body>
+</html>
