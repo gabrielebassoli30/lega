@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estrattore Formazioni AA</title>
+<style>
+  :root { --bg:#0d0f14; --surface:#161920; --border:#2a2d35; --accent:#e8c547; --text:#e8eaf0; --muted:#6b7280; --green:#5ab87a; --red:#e05a5a; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:32px; max-width:600px; width:100%; }
+  h1 { font-size:22px; color:var(--accent); margin-bottom:8px; }
+  .subtitle { color:var(--muted); font-size:14px; margin-bottom:24px; line-height:1.6; }
+  .step { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:12px; }
+  .step-num { display:inline-block; background:var(--accent); color:#000; font-weight:700; font-size:12px; border-radius:50%; width:22px; height:22px; text-align:center; line-height:22px; margin-right:8px; }
+  .step-title { font-weight:600; font-size:14px; display:inline; }
+  .step-body { margin-top:10px; font-size:13px; color:var(--muted); line-height:1.6; }
+  input[type=text] { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:6px; color:var(--text); font-size:13px; padding:10px 14px; margin-top:8px; outline:none; }
+  input[type=text]:focus { border-color:var(--accent); }
+  button { width:100%; padding:14px; border-radius:8px; border:none; font-size:15px; font-weight:600; cursor:pointer; margin-top:16px; transition:all .15s; }
+  #btnStart { background:var(--accent); color:#000; }
+  #btnStart:hover { opacity:.9; }
+  #btnStart:disabled { opacity:.4; cursor:not-allowed; }
+  #btnDownload { background:var(--green); color:#fff; display:none; margin-top:8px; }
+  .log { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:12px; margin-top:16px; max-height:200px; overflow-y:auto; font-size:12px; font-family:monospace; display:none; }
+  .log-line { padding:2px 0; }
+  .log-ok { color:var(--green); }
+  .log-err { color:var(--red); }
+  .log-info { color:var(--muted); }
+  .progress { height:4px; background:var(--border); border-radius:2px; margin-top:12px; overflow:hidden; display:none; }
+  .progress-bar { height:100%; background:var(--accent); border-radius:2px; transition:width .3s; width:0%; }
+  .warning { background:rgba(240,192,48,0.08); border:1px solid rgba(240,192,48,0.3); border-radius:6px; padding:12px; font-size:13px; color:#f0c030; margin-bottom:16px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>⚽ Estrattore Formazioni AA</h1>
+  <p class="subtitle">Questo tool legge i file Excel delle formazioni da Google Drive e genera un file JSON da allegare a Claude per aggiornare il sito.</p>
+
+  <div class="warning">
+    ⚠️ Prima di usare questo tool devi creare un progetto Google Cloud gratuito e ottenere un API Key. Segui i 3 step qui sotto.
+  </div>
+
+  <div class="step">
+    <span class="step-num">1</span>
+    <span class="step-title">Crea un progetto Google Cloud</span>
+    <div class="step-body">
+      Vai su <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent)">console.cloud.google.com</a> →
+      clicca "Crea progetto" → dai un nome qualsiasi → clicca "Crea".<br><br>
+      Poi vai su <b>API e servizi → Libreria</b> → cerca "Google Drive API" → clicca "Abilita".
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span>
+    <span class="step-title">Ottieni le credenziali OAuth</span>
+    <div class="step-body">
+      Vai su <b>API e servizi → Credenziali</b> → clicca "Crea credenziali" → scegli <b>"ID client OAuth 2.0"</b>.<br><br>
+      Tipo applicazione: <b>Applicazione web</b>.<br>
+      In "Origini JavaScript autorizzate" aggiungi: <code style="color:var(--accent)">null</code> (per file locali) e l'URL completo di questa pagina se la ospiti.<br><br>
+      In "URI di reindirizzamento autorizzati" aggiungi: <code style="color:var(--accent)">https://localhost</code><br><br>
+      Clicca "Crea" e copia il <b>Client ID</b>.
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">3</span>
+    <span class="step-title">Inserisci il Client ID e avvia</span>
+    <div class="step-body">
+      Incolla il Client ID qui sotto, poi clicca "Avvia estrazione".<br>
+      Il tool leggerà automaticamente le cartelle:
+      <ul style="margin-top:6px; padding-left:16px;">
+        <li>Campionato 2024/2025</li>
+        <li>Campionato 2025/2026</li>
+        <li>Coppa 2024/2025</li>
+        <li>Coppa 2025/2026</li>
+      </ul>
+    </div>
+    <input type="text" id="clientId" placeholder="Incolla qui il Client ID (es. 12345-abc.apps.googleusercontent.com)" />
+  </div>
+
+  <button id="btnStart" onclick="startExtraction()">🚀 Avvia estrazione</button>
+  <button id="btnDownload" onclick="downloadJSON()">⬇️ Scarica JSON</button>
+
+  <div class="progress" id="progressWrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="log" id="logBox"></div>
+</div>
+
+<script>
+const FOLDER_NAMES = {
+  'Campionato 2024/2025': 'camp_2425',
+  'Campionato 2025/2026': 'camp_2526',
+  'Coppa 2024/2025':      'coppa_2425',
+  'Coppa 2025/2026':      'coppa_2526',
+};
+
+const SQ_MAP = {
+  'TEAM SHISH': 'Team SHISH', 'ATLETICO WHALID': 'Atletico Whalid',
+  'THEPINKBLACKEAGLES': 'ThePinkBlackEagles', 'PSV ENDOVENA': 'Psv Endovena',
+  'PESCARAMANZIA': 'PeScaramanzia', 'PATATINAIKOS': 'Patatinaikos',
+  'BRAZZERS': 'Brazzers', 'VIRTUS BASAGLIA': 'Virtus Basaglia',
+};
+
+let tokenClient, accessToken, allData = {}, totalFiles = 0, doneFiles = 0;
+
+function log(msg, type='info') {
+  const box = document.getElementById('logBox');
+  box.style.display = 'block';
+  const line = document.createElement('div');
+  line.className = `log-line log-${type}`;
+  line.textContent = msg;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+function setProgress(pct) {
+  document.getElementById('progressWrap').style.display = 'block';
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+async function startExtraction() {
+  const clientId = document.getElementById('clientId').value.trim();
+  if (!clientId) { alert('Inserisci il Client ID'); return; }
+
+  document.getElementById('btnStart').disabled = true;
+  log('Caricamento libreria Google Identity...', 'info');
+
+  // Carica la libreria Google
+  await loadScript('https://accounts.google.com/gsi/client');
+
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: clientId,
+    scope: 'https://www.googleapis.com/auth/drive.readonly',
+    callback: async (resp) => {
+      if (resp.error) { log('Errore autenticazione: ' + resp.error, 'err'); return; }
+      accessToken = resp.access_token;
+      log('✓ Autenticato con Google Drive', 'ok');
+      await extractAll();
+    }
+  });
+
+  tokenClient.requestAccessToken();
+}
+
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+async function driveRequest(url) {
+  const resp = await fetch(url, { headers: { Authorization: 'Bearer ' + accessToken } });
+  return resp.json();
+}
+
+async function extractAll() {
+  log('Ricerca cartelle su Drive...', 'info');
+
+  // Trova le 4 cartelle
+  const foldersResp = await driveRequest(
+    `https://www.googleapis.com/drive/v3/files?q=mimeType='application/vnd.google-apps.folder' and trashed=false&fields=files(id,name)&pageSize=50`
+  );
+
+  const folders = {};
+  for (const f of foldersResp.files || []) {
+    if (FOLDER_NAMES[f.name]) {
+      folders[f.name] = f.id;
+      log(`✓ Trovata cartella: ${f.name}`, 'ok');
+    }
+  }
+
+  if (Object.keys(folders).length === 0) {
+    log('❌ Nessuna cartella trovata. Verifica i nomi delle cartelle su Drive.', 'err');
+    document.getElementById('btnStart').disabled = false;
+    return;
+  }
+
+  // Conta i file totali
+  for (const [fname, fid] of Object.entries(folders)) {
+    const filesResp = await driveRequest(
+      `https://www.googleapis.com/drive/v3/files?q='${fid}' in parents and mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' and trashed=false&fields=files(id,name)&pageSize=100`
+    );
+    totalFiles += (filesResp.files || []).length;
+  }
+
+  log(`📁 Totale file da scaricare: ${totalFiles}`, 'info');
+
+  // Processa ogni cartella
+  for (const [fname, fid] of Object.entries(folders)) {
+    const key = FOLDER_NAMES[fname];
+    allData[key] = {};
+
+    const filesResp = await driveRequest(
+      `https://www.googleapis.com/drive/v3/files?q='${fid}' in parents and mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' and trashed=false&fields=files(id,name)&pageSize=100&orderBy=name`
+    );
+
+    for (const file of (filesResp.files || [])) {
+      // Estrai numero giornata dal nome file
+      const match = file.name.match(/(\d+)[\s_-]?giornata/i) || file.name.match(/_(\d+)_/);
+      const giornata = match ? parseInt(match[1]) : doneFiles + 1;
+
+      log(`Scarico: ${file.name}...`, 'info');
+      try {
+        const content = await downloadFile(file.id);
+        const partite = await parseXlsx(content, giornata);
+        allData[key][giornata] = partite;
+        doneFiles++;
+        setProgress(Math.round(doneFiles / totalFiles * 100));
+        log(`✓ G${giornata} ${fname}: ${partite.length} partite`, 'ok');
+      } catch(e) {
+        log(`❌ Errore su ${file.name}: ${e.message}`, 'err');
+        doneFiles++;
+      }
+    }
+  }
+
+  log('✅ Estrazione completata!', 'ok');
+  document.getElementById('btnDownload').style.display = 'block';
+}
+
+async function downloadFile(fileId) {
+  const resp = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  );
+  return resp.arrayBuffer();
+}
+
+async function parseXlsx(buffer, giornata) {
+  // Usa SheetJS per leggere l'xlsx
+  await loadSheetJS();
+
+  const data = new Uint8Array(buffer);
+  const wb = XLSX.read(data, { type: 'array' });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null });
+
+  const partite = [];
+  // Trova righe con risultato (colonna 5 = X-Y)
+  for (let i = 0; i < rows.length; i++) {
+    const v5 = rows[i] && rows[i][5] ? String(rows[i][5]).trim() : '';
+    if (/^\d+-\d+$/.test(v5)) {
+      const sqCasa = SQ_MAP[String(rows[i][0] || '').trim()] || String(rows[i][0] || '').trim();
+      const sqTraf = SQ_MAP[String(rows[i][6] || '').trim()] || String(rows[i][6] || '').trim();
+      const ris = v5;
+      const modCasa = rows[i+1] ? String(rows[i+1][0] || '').trim() : '';
+      const modTraf = rows[i+1] ? String(rows[i+1][6] || '').trim() : '';
+
+      const giocCasa = parseGiocatori(rows, i+2, i+26, 0, 1, 3, 4);
+      const giocTraf = parseGiocatori(rows, i+2, i+26, 6, 7, 9, 10);
+
+      let totCasa = null, totTraf = null;
+      for (let r = i+2; r < i+28 && r < rows.length; r++) {
+        const c0 = String(rows[r][0] || '');
+        const c6 = String(rows[r][6] || '');
+        if (c0.includes('TOTALE')) { const m = c0.match(/[\d.,]+/); if (m) totCasa = parseFloat(m[0].replace(',','.')); }
+        if (c6.includes('TOTALE')) { const m = c6.match(/[\d.,]+/); if (m) totTraf = parseFloat(m[0].replace(',','.')); }
+      }
+
+      partite.push({ g: giornata, casa: sqCasa, traf: sqTraf, ris, modulo_casa: modCasa, modulo_traf: modTraf, totale_casa: totCasa, totale_traf: totTraf, giocatori_casa: giocCasa, giocatori_traf: giocTraf });
+    }
+  }
+  return partite;
+}
+
+function parseGiocatori(rows, start, end, colR, colN, colV, colFV) {
+  const gioc = [];
+  let fase = 'titolari';
+  for (let r = start; r < end && r < rows.length; r++) {
+    const ruolo = String(rows[r][colR] || '').trim();
+    const nome  = String(rows[r][colN] || '').trim();
+    if (nome === 'Panchina' || ruolo === 'Panchina') { fase = 'panchina'; continue; }
+    if (['P','D','C','A'].includes(ruolo) && nome) {
+      const v  = rows[r][colV];
+      const fv = rows[r][colFV];
+      const parseVal = x => { if (x === null || x === undefined) return null; const s = String(x).replace(',','.').trim(); if (['-',''].includes(s)) return null; const n = parseFloat(s); return isNaN(n) ? null : Math.round(n*10)/10; };
+      gioc.push({ nome, ruolo, voto: parseVal(v), fvoto: parseVal(fv), sezione: fase });
+    }
+  }
+  return gioc;
+}
+
+let sheetJsLoaded = false;
+function loadSheetJS() {
+  if (sheetJsLoaded) return Promise.resolve();
+  return loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js').then(() => { sheetJsLoaded = true; });
+}
+
+function downloadJSON() {
+  const json = JSON.stringify(allData, null, 0);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'formazioni_AA.json'; a.click();
+  URL.revokeObjectURL(url);
+  log('✅ File JSON scaricato! Allegalo a Claude.', 'ok');
+}
+</script>
+</body>
+</html>
